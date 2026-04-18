@@ -2,14 +2,15 @@
 -- Personal Trainer Management Platform
 
 CREATE TABLE IF NOT EXISTS users (
-  id           TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(8)))),
-  email        TEXT UNIQUE NOT NULL,
-  name         TEXT NOT NULL,
-  role         TEXT NOT NULL CHECK(role IN ('professor', 'aluno')),
-  phone        TEXT,
-  avatar_url   TEXT,
-  created_at   INTEGER DEFAULT (unixepoch()),
-  updated_at   INTEGER DEFAULT (unixepoch())
+  id            TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(8)))),
+  email         TEXT UNIQUE NOT NULL,
+  name          TEXT NOT NULL,
+  role          TEXT NOT NULL CHECK(role IN ('professor', 'aluno')),
+  phone         TEXT,
+  avatar_url    TEXT,
+  password_hash TEXT,
+  created_at    INTEGER DEFAULT (unixepoch()),
+  updated_at    INTEGER DEFAULT (unixepoch())
 );
 
 CREATE TABLE IF NOT EXISTS professor_profiles (

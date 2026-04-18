@@ -1343,5 +1343,10 @@ body.theme-alto-contraste {
   .landing-features { grid-template-columns: 1fr; }
   .form-grid-3      { grid-template-columns: 1fr; }
   .payment-summary  { grid-template-columns: 1fr; }
-  .cal-grid { grid-template-columns: 40px repeat(7,1fr); }
+  .cal-grid         { grid-template-columns: 40px repeat(7,1fr); }
+  .login-right      { padding: var(--space-5) var(--space-4); align-items: stretch; }
+  .login-form-box   { max-width: 100%; }
+  .login-form-heading { font-size: var(--text-xl); }
+  .login-tabs       { margin-bottom: var(--space-5); }
+  .btn-lg           { padding: var(--space-4) var(--space-5); font-size: var(--text-base); }
 }

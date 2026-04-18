@@ -141,8 +141,12 @@
               <input class="form-input" type="tel" id="a-telefone" placeholder="(11) 99999-0000">
             </div>
             <div class="form-group">
-              <label class="form-label" for="a-nascimento">Data de nascimento</label>
-              <input class="form-input" type="date" id="a-nascimento">
+              <label class="form-label" for="a-senha">Senha de acesso *</label>
+              <div style="display:flex;gap:var(--space-2);">
+                <input class="form-input" type="text" id="a-senha" required placeholder="Senha para o aluno" style="flex:1;">
+                <button type="button" onclick="gerarSenha()" class="btn btn-secondary" title="Gerar senha aleatória" style="white-space:nowrap;flex-shrink:0;"><span data-icon="refresh-cw"></span></button>
+              </div>
+              <div style="font-size:var(--text-xs);color:var(--forte-text-muted);margin-top:4px;">Repasse esta senha ao aluno pelo WhatsApp.</div>
             </div>
           </div>
         </div>
@@ -288,34 +292,85 @@
 
   async function saveAluno(e) {
     e.preventDefault();
+    const btn = document.querySelector('#modal-aluno .modal-footer .btn-primary');
+    btn.disabled = true;
+    btn.textContent = 'Salvando...';
     const payload = {
-      name: document.getElementById('a-nome').value,
-      email: document.getElementById('a-email').value,
-      phone: document.getElementById('a-telefone').value,
-      objective: document.getElementById('a-objetivo').value,
-      plan_type: document.getElementById('a-plano').value,
+      name:             document.getElementById('a-nome').value,
+      email:            document.getElementById('a-email').value,
+      phone:            document.getElementById('a-telefone').value,
+      senha:            document.getElementById('a-senha').value,
+      objective:        document.getElementById('a-objetivo').value,
+      plan_type:        document.getElementById('a-plano').value,
       sessions_per_week: parseInt(document.getElementById('a-sessoes').value),
-      plan_value: parseFloat(document.getElementById('a-valor').value || 0),
+      plan_value:       parseFloat(document.getElementById('a-valor').value || 0),
       anamnese: {
-        has_heart_issue: document.getElementById('a-heart').checked ? 1 : 0,
+        has_heart_issue:  document.getElementById('a-heart').checked ? 1 : 0,
         has_hypertension: document.getElementById('a-hiper').checked ? 1 : 0,
-        has_diabetes: document.getElementById('a-diab').checked ? 1 : 0,
-        has_joint_pain: document.getElementById('a-joint').checked ? 1 : 0,
-        injuries: document.getElementById('a-lesoes').value,
-        observations: document.getElementById('a-obs').value,
+        has_diabetes:     document.getElementById('a-diab').checked ? 1 : 0,
+        has_joint_pain:   document.getElementById('a-joint').checked ? 1 : 0,
+        injuries:         document.getElementById('a-lesoes').value,
+        observations:     document.getElementById('a-obs').value,
       }
     };
     try {
-      await fetch(`${WORKER}/api/professor/students`, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-    } catch {}
-    toast('Aluno cadastrado com sucesso! 🎉', 'success');
-    closeModal();
-    loadAlunos();
+      const res = await fetch(`${WORKER}/api/professor/students`, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast(d.error || 'Erro ao cadastrar aluno.', 'error');
+        btn.disabled = false; btn.textContent = 'Salvar Aluno';
+        return;
+      }
+      closeModal();
+      loadAlunos();
+      // Exibe a senha para o professor repassar ao aluno
+      const senha = d.senha_acesso || payload.senha;
+      showSenhaModal(payload.name, payload.email, senha);
+    } catch {
+      toast('Erro de conexão. Tente novamente.', 'error');
+      btn.disabled = false; btn.textContent = 'Salvar Aluno';
+    }
+  }
+
+  function gerarSenha() {
+    const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
+    let s = '';
+    for (let i = 0; i < 8; i++) s += chars[Math.floor(Math.random() * chars.length)];
+    document.getElementById('a-senha').value = s;
+  }
+
+  function showSenhaModal(nome, email, senha) {
+    const el = document.createElement('div');
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:9999;padding:var(--space-4);';
+    el.innerHTML = `
+      <div style="background:var(--forte-surface-2);border-radius:var(--radius-xl);padding:var(--space-8);max-width:400px;width:100%;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:var(--space-3);">✅</div>
+        <h3 style="font-size:var(--text-xl);font-weight:800;margin-bottom:var(--space-2);">Aluno cadastrado!</h3>
+        <p style="color:var(--forte-text-secondary);font-size:var(--text-sm);margin-bottom:var(--space-5);">Repasse as credenciais de acesso para <strong>${nome}</strong>:</p>
+        <div style="background:var(--forte-surface);border:1px solid var(--forte-border);border-radius:var(--radius-lg);padding:var(--space-4);margin-bottom:var(--space-5);text-align:left;">
+          <div style="font-size:var(--text-xs);color:var(--forte-text-muted);margin-bottom:var(--space-1);">E-mail</div>
+          <div style="font-family:var(--font-mono);font-weight:700;margin-bottom:var(--space-3);">${email}</div>
+          <div style="font-size:var(--text-xs);color:var(--forte-text-muted);margin-bottom:var(--space-1);">Senha</div>
+          <div style="font-family:var(--font-mono);font-weight:700;font-size:var(--text-lg);color:var(--forte-accent);">${senha}</div>
+        </div>
+        <button onclick="copiarAcesso('${email}','${senha}',this)" class="btn btn-secondary btn-block" style="margin-bottom:var(--space-3);"><span data-icon="copy"></span> Copiar para WhatsApp</button>
+        <button onclick="this.closest('[style*=fixed]').remove()" class="btn btn-primary btn-block">Fechar</button>
+      </div>`;
+    document.body.appendChild(el);
+    if (window.farpaIcons) window.farpaIcons();
+  }
+
+  function copiarAcesso(email, senha, btn) {
+    const texto = `Olá! Seu acesso ao farpa Forte:\n🔗 https://forte.farpa.ai/login.html?role=aluno\n📧 E-mail: ${email}\n🔑 Senha: ${senha}`;
+    navigator.clipboard.writeText(texto).then(() => { btn.textContent = 'Copiado!'; setTimeout(() => { btn.innerHTML = '<span data-icon="copy"></span> Copiar para WhatsApp'; if(window.farpaIcons) window.farpaIcons(); }, 2000); });
   }
 
   function openModal() {
     document.getElementById('modal-aluno').classList.add('open');
     document.getElementById('form-aluno').reset();
+    const btn = document.querySelector('#modal-aluno .modal-footer .btn-primary');
+    btn.disabled = false; btn.textContent = 'Salvar Aluno';
+    gerarSenha();
   }
   function closeModal() { document.getElementById('modal-aluno').classList.remove('open'); }
   function editAluno(id) { toast('Edição em breve!', 'success'); }

@@ -18,6 +18,7 @@ export interface Env {
 
 const ALLOWED_ORIGINS = [
   'https://forte.farpa.ai',
+  'https://forte-farpa-ai.pages.dev',
   'https://farpa.ai',
   'https://admin.farpa.ai',
   'http://localhost:3000',
@@ -315,11 +316,16 @@ export default {
           return jsonResp(results, 200, cors);
         }
         if (request.method === 'POST') {
-          const b = await request.json() as { name:string; email:string; phone?:string; objective?:string; plan_type?:string; sessions_per_week?:number; plan_value?:number; anamnese?: Record<string,unknown> };
-          const tempPass = await hashPassword(crypto.randomUUID()); // senha temporária
+          const b = await request.json() as { name:string; email:string; phone?:string; senha?:string; objective?:string; plan_type?:string; sessions_per_week?:number; plan_value?:number; anamnese?: Record<string,unknown> };
+          if (!b.name || !b.email) return jsonResp({ error:'name e email são obrigatórios' }, 400, cors);
+          const existingUser = await env.DB.prepare('SELECT id FROM users WHERE email=?').bind(b.email.toLowerCase().trim()).first();
+          if (existingUser) return jsonResp({ error:'e-mail já cadastrado' }, 409, cors);
+          // Usa senha fornecida pelo professor; senão gera uma de 8 chars legível
+          const plainPassword = b.senha || Math.random().toString(36).slice(-4) + Math.random().toString(36).slice(-4).toUpperCase();
+          const passHash = await hashPassword(plainPassword);
           const userId   = crypto.randomUUID().replace(/-/g,'').slice(0,16);
           await env.DB.prepare('INSERT INTO users (id,email,name,role,phone,password_hash) VALUES (?,?,?,?,?,?)')
-            .bind(userId, b.email.toLowerCase().trim(), b.name, 'aluno', b.phone||null, tempPass).run();
+            .bind(userId, b.email.toLowerCase().trim(), b.name, 'aluno', b.phone||null, passHash).run();
           const studentId = crypto.randomUUID().replace(/-/g,'').slice(0,16);
           await env.DB.prepare('INSERT INTO student_profiles (id,user_id,professor_id,objective,plan_type,sessions_per_week,plan_value) VALUES (?,?,?,?,?,?,?)')
             .bind(studentId, userId, session.user_id, b.objective||null, b.plan_type||'mensal', b.sessions_per_week||3, b.plan_value||0).run();
@@ -328,7 +334,8 @@ export default {
             await env.DB.prepare('INSERT INTO anamneses (id,student_id,has_heart_issue,has_hypertension,has_diabetes,has_joint_pain,injuries,observations) VALUES (?,?,?,?,?,?,?,?)')
               .bind(crypto.randomUUID().replace(/-/g,'').slice(0,16), studentId, a.has_heart_issue||0, a.has_hypertension||0, a.has_diabetes||0, a.has_joint_pain||0, a.injuries||null, a.observations||null).run();
           }
-          return jsonResp({ ok:true, student_id: studentId }, 201, cors);
+          // Retorna senha em texto para o professor repassar ao aluno (só na criação)
+          return jsonResp({ ok:true, student_id: studentId, senha_acesso: plainPassword }, 201, cors);
         }
       }
 
