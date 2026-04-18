@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — farpa Forte</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../themes.css">
+  <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../forte.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">F</div>
+      <div class="sidebar-logo-info">
+        <div class="sidebar-logo-name">forte</div>
+        <div class="sidebar-logo-sub">Professor</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-label">Principal</span>
+        <a class="nav-item active" href="dashboard.html">
+          <span class="nav-icon">⊞</span> Dashboard
+        </a>
+        <a class="nav-item" href="agenda.html">
+          <span class="nav-icon">📅</span> Agenda
+        </a>
+        <a class="nav-item" href="alunos.html">
+          <span class="nav-icon">👥</span> Alunos
+        </a>
+        <a class="nav-item" href="pagamentos.html">
+          <span class="nav-icon">💳</span> Pagamentos
+          <span class="nav-badge" id="badge-pendentes">3</span>
+        </a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Conta</span>
+        <a class="nav-item" href="#">
+          <span class="nav-icon">⚙</span> Configurações
+        </a>
+        <a class="nav-item" href="../index.html">
+          <span class="nav-icon">↩</span> Início
+        </a>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar" id="sidebar-avatar">R</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-name">Professor</div>
+          <div class="user-role">Personal Trainer</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="page-title" id="greeting">Bom dia! 👋</span>
+        <span class="page-subtitle" id="today-date"></span>
+      </div>
+      <div class="topbar-right">
+        <button id="btn-alto-contraste" aria-label="Ativar alto contraste">⊙ Contraste</button>
+        <a href="agenda.html" class="btn btn-primary btn-sm">+ Nova sessão</a>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card stat-card-accent">
+          <div class="stat-header">
+            <span class="stat-label">Alunos Ativos</span>
+            <div class="stat-icon stat-icon-orange">👥</div>
+          </div>
+          <div class="stat-value" id="stat-alunos">—</div>
+          <div class="stat-delta up" id="stat-alunos-delta">↑ 2 este mês</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Sessões Hoje</span>
+            <div class="stat-icon stat-icon-blue">📅</div>
+          </div>
+          <div class="stat-value" id="stat-sessoes">—</div>
+          <div class="stat-delta neutral" id="stat-sessoes-delta">de <span id="stat-sessoes-total">0</span> agendadas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Receita no Mês</span>
+            <div class="stat-icon stat-icon-green">💰</div>
+          </div>
+          <div class="stat-value" id="stat-receita">—</div>
+          <div class="stat-delta up" id="stat-receita-delta">↑ vs mês anterior</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Pag. Pendentes</span>
+            <div class="stat-icon stat-icon-red">⚠</div>
+          </div>
+          <div class="stat-value" id="stat-pendentes">—</div>
+          <div class="stat-delta down" id="stat-pendentes-delta">requer atenção</div>
+        </div>
+      </div>
+
+      <!-- Grid principal -->
+      <div class="dashboard-grid">
+
+        <!-- Agenda de hoje -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📅 Agenda de Hoje</span>
+            <a href="agenda.html" class="btn btn-ghost btn-sm">Ver tudo →</a>
+          </div>
+          <div class="card-body">
+            <div class="timeline" id="timeline-hoje">
+              <div class="empty-state" style="padding:var(--space-8) var(--space-4);">
+                <div class="empty-icon">📭</div>
+                <div class="empty-title">Sem sessões hoje</div>
+                <div class="empty-desc">Agende uma nova sessão para seus alunos.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coluna direita -->
+        <div style="display:flex;flex-direction:column;gap:var(--space-5);">
+
+          <!-- Alunos recentes -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">👥 Alunos Recentes</span>
+              <a href="alunos.html" class="btn btn-ghost btn-sm">Ver todos →</a>
+            </div>
+            <div class="card-body" style="padding-top:0;">
+              <div id="alunos-recentes">
+                <div class="empty-state" style="padding:var(--space-5);">
+                  <div class="empty-icon">👤</div>
+                  <div class="empty-title">Nenhum aluno</div>
+                  <div class="empty-desc">Cadastre seu primeiro aluno.</div>
+                </div>
+              </div>
+              <a href="alunos.html" class="btn btn-secondary btn-block btn-sm" style="margin-top:var(--space-4);">+ Cadastrar aluno</a>
+            </div>
+          </div>
+
+          <!-- Pagamentos -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">💳 Pagamentos Pendentes</span>
+              <a href="pagamentos.html" class="btn btn-ghost btn-sm">Ver todos →</a>
+            </div>
+            <div class="card-body" style="padding-top:0;">
+              <div id="pag-pendentes-list">
+                <div class="empty-state" style="padding:var(--space-5);">
+                  <div class="empty-icon">✅</div>
+                  <div class="empty-title">Tudo em dia!</div>
+                  <div class="empty-desc">Nenhum pagamento pendente.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script>
+  const WORKER = 'https://forte-worker.SEU_SUBDOMINIO.workers.dev';
+
+  // Saudação por hora
+  const h = new Date().getHours();
+  document.getElementById('greeting').textContent =
+    (h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite') + '! 👋';
+
+  document.getElementById('today-date').textContent =
+    new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  // Alto contraste
+  const btnAC = document.getElementById('btn-alto-contraste');
+  btnAC.addEventListener('click', () => {
+    document.body.classList.toggle('theme-alto-contraste');
+    localStorage.setItem('forte-tema', document.body.className);
+  });
+  const saved = localStorage.getItem('forte-tema');
+  if (saved) document.body.className = saved;
+
+  // Carregar dados
+  async function loadDashboard() {
+    try {
+      const res = await fetch(`${WORKER}/api/professor/dashboard`, { credentials: 'include' });
+      if (res.status === 401) { window.location.href = '../login.html'; return; }
+      const d = await res.json();
+      if (d.professor) {
+        const initials = d.professor.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+        document.getElementById('sidebar-avatar').textContent = initials;
+        document.getElementById('sidebar-name').textContent = d.professor.name;
+      }
+      renderStats(d);
+      renderTimeline(d.sessions_today || []);
+      renderAlunos(d.recent_students || []);
+      renderPendentes(d.pending_payments || []);
+    } catch {
+      renderMockData();
+    }
+  }
+
+  function renderStats(d) {
+    document.getElementById('stat-alunos').textContent = d.active_students ?? '—';
+    document.getElementById('stat-sessoes').textContent = d.sessions_done_today ?? '0';
+    document.getElementById('stat-sessoes-total').textContent = d.sessions_total_today ?? '0';
+    document.getElementById('stat-receita').textContent = d.monthly_revenue != null
+      ? 'R$ ' + Number(d.monthly_revenue).toLocaleString('pt-BR', {minimumFractionDigits:0})
+      : '—';
+    document.getElementById('stat-pendentes').textContent = d.pending_payments_count ?? '—';
+    if (d.pending_payments_count > 0) {
+      document.getElementById('badge-pendentes').textContent = d.pending_payments_count;
+    }
+  }
+
+  function renderTimeline(sessions) {
+    const el = document.getElementById('timeline-hoje');
+    if (!sessions.length) return;
+    el.innerHTML = sessions.map(s => {
+      const t = new Date(s.scheduled_at * 1000);
+      const time = t.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+      const dotClass = s.status === 'realizada' ? 'done' : s.status === 'falta' ? 'miss' : '';
+      return `
+        <div class="timeline-item">
+          <span class="timeline-time">${time}</span>
+          <div class="timeline-dot ${dotClass}"></div>
+          <div class="timeline-body">
+            <div class="timeline-student">${s.student_name}</div>
+            <div class="timeline-meta">${s.duration_min} min · ${statusLabel(s.status)}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderAlunos(alunos) {
+    const el = document.getElementById('alunos-recentes');
+    if (!alunos.length) return;
+    el.innerHTML = alunos.map(a => `
+      <div style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) 0;border-bottom:1px solid var(--forte-border);">
+        <div class="avatar" style="flex-shrink:0;">${initials(a.name)}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:var(--text-sm);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${a.name}</div>
+          <div style="font-size:var(--text-xs);color:var(--forte-text-muted);">${a.objective || 'Sem objetivo definido'}</div>
+        </div>
+        <span class="badge badge-${a.status === 'ativo' ? 'success' : 'gray'}">${a.status}</span>
+      </div>`).join('');
+  }
+
+  function renderPendentes(payments) {
+    const el = document.getElementById('pag-pendentes-list');
+    if (!payments.length) return;
+    el.innerHTML = payments.map(p => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-3) 0;border-bottom:1px solid var(--forte-border);">
+        <div>
+          <div style="font-size:var(--text-sm);font-weight:600;">${p.student_name}</div>
+          <div style="font-size:var(--text-xs);color:var(--forte-text-muted);">Vence ${new Date(p.due_date*1000).toLocaleDateString('pt-BR')}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:var(--text-sm);font-weight:700;font-family:var(--font-mono);">R$ ${Number(p.amount).toFixed(2)}</div>
+          <span class="badge badge-${p.status === 'atrasado' ? 'danger' : 'warning'}">${p.status}</span>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderMockData() {
+    document.getElementById('stat-alunos').textContent = '12';
+    document.getElementById('stat-sessoes').textContent = '3';
+    document.getElementById('stat-sessoes-total').textContent = '5';
+    document.getElementById('stat-receita').textContent = 'R$ 4.800';
+    document.getElementById('stat-pendentes').textContent = '2';
+    document.getElementById('badge-pendentes').textContent = '2';
+    renderTimeline([
+      { scheduled_at: Math.floor(Date.now()/1000) - 7200, student_name: 'Ana Lima', duration_min: 60, status: 'realizada' },
+      { scheduled_at: Math.floor(Date.now()/1000) + 1800, student_name: 'Carlos Mendes', duration_min: 60, status: 'confirmada' },
+      { scheduled_at: Math.floor(Date.now()/1000) + 5400, student_name: 'Fernanda Costa', duration_min: 60, status: 'agendada' },
+    ]);
+    renderAlunos([
+      { name: 'Ana Lima', objective: 'Emagrecimento', status: 'ativo' },
+      { name: 'Carlos Mendes', objective: 'Ganho de massa', status: 'ativo' },
+      { name: 'Fernanda Costa', objective: 'Condicionamento', status: 'ativo' },
+    ]);
+    renderPendentes([
+      { student_name: 'Bruno Alves', due_date: Math.floor(Date.now()/1000) - 86400*5, amount: 350, status: 'atrasado' },
+      { student_name: 'Juliana Santos', due_date: Math.floor(Date.now()/1000) + 86400*2, amount: 480, status: 'pendente' },
+    ]);
+  }
+
+  function statusLabel(s) {
+    const m = { agendada:'Agendada', confirmada:'Confirmada', realizada:'Realizada', cancelada:'Cancelada', falta:'Falta' };
+    return m[s] || s;
+  }
+
+  function initials(name) {
+    return name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+  }
+
+  loadDashboard();
+</script>
+
+</body>
+</html>

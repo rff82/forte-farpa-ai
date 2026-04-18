@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Painel — farpa Forte</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../themes.css">
+  <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../forte.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <!-- Sidebar aluno -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">F</div>
+      <div class="sidebar-logo-info">
+        <div class="sidebar-logo-name">forte</div>
+        <div class="sidebar-logo-sub">Meu painel</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-label">Minha área</span>
+        <a class="nav-item active" href="dashboard.html"><span class="nav-icon">⊞</span> Início</a>
+        <a class="nav-item" href="#agenda"><span class="nav-icon">📅</span> Minha Agenda</a>
+        <a class="nav-item" href="evolucao.html"><span class="nav-icon">📈</span> Evolução</a>
+        <a class="nav-item" href="#pagamentos"><span class="nav-icon">💳</span> Pagamentos</a>
+        <a class="nav-item" href="#treino"><span class="nav-icon">🏋️</span> Meu Treino</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Conta</span>
+        <a class="nav-item" href="../login.html"><span class="nav-icon">↩</span> Sair</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar" id="sidebar-avatar">A</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-name">Aluno</div>
+          <div class="user-role">Personal Training</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="page-title" id="greeting">Bom dia! 💪</span>
+        <span class="page-subtitle" id="today-date"></span>
+      </div>
+      <div class="topbar-right">
+        <button id="btn-alto-contraste" aria-label="Ativar alto contraste">⊙ Contraste</button>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- Próxima sessão + Streak -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5);margin-bottom:var(--space-5);">
+
+        <!-- Próxima sessão -->
+        <div class="next-session-card" id="next-session-card">
+          <div class="nsc-label">📅 Próxima Sessão</div>
+          <div class="nsc-title" id="nsc-title">—</div>
+          <div class="nsc-meta" id="nsc-meta">—</div>
+          <div class="nsc-actions">
+            <button class="btn btn-primary btn-sm" id="btn-confirmar">✓ Confirmar presença</button>
+            <button class="btn btn-secondary btn-sm" onclick="toast('Em desenvolvimento','success')">Cancelar</button>
+          </div>
+        </div>
+
+        <!-- Streak -->
+        <div class="streak-card">
+          <div class="streak-flame">🔥</div>
+          <div>
+            <div class="streak-count" id="streak-count">—</div>
+            <div class="streak-label">Treinos seguidos</div>
+          </div>
+          <div style="margin-left:auto;text-align:right;">
+            <div style="font-size:var(--text-sm);color:var(--forte-text-secondary);font-weight:600;" id="total-treinos">— treinos</div>
+            <div style="font-size:var(--text-xs);color:var(--forte-text-muted);">no total</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="margin-bottom:var(--space-6);">
+        <div class="stat-card">
+          <div class="stat-header"><span class="stat-label">Sessões este mês</span><div class="stat-icon stat-icon-orange">📅</div></div>
+          <div class="stat-value" id="stat-sessoes-mes">—</div>
+          <div class="stat-delta neutral" id="stat-sessoes-delta">de <span id="stat-sessoes-prev">0</span> mês anterior</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header"><span class="stat-label">Frequência</span><div class="stat-icon stat-icon-green">✓</div></div>
+          <div class="stat-value" id="stat-freq">—%</div>
+          <div class="stat-delta up">taxa de presença</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header"><span class="stat-label">Peso atual</span><div class="stat-icon stat-icon-blue">⚖</div></div>
+          <div class="stat-value" id="stat-peso">—</div>
+          <div class="stat-delta" id="stat-peso-delta">kg</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header"><span class="stat-label">Pagamento</span><div class="stat-icon" id="pag-icon">💳</div></div>
+          <div class="stat-value" id="stat-pag-status">—</div>
+          <div class="stat-delta" id="stat-pag-delta">—</div>
+        </div>
+      </div>
+
+      <!-- Grid: Treino + Histórico -->
+      <div class="dashboard-grid">
+
+        <!-- Plano de treino ativo -->
+        <div class="card" id="section-treino">
+          <div class="card-header">
+            <span class="card-title">🏋️ Meu Plano de Treino</span>
+            <span class="badge badge-orange" id="plano-badge">—</span>
+          </div>
+          <div class="card-body" id="treino-body">
+
+            <!-- Tabs A/B/C -->
+            <div class="tabs" id="treino-tabs">
+              <!-- gerado por JS -->
+            </div>
+            <div id="treino-exercicios">
+              <div class="empty-state">
+                <div class="empty-icon">🏋️</div>
+                <div class="empty-title">Plano não disponível</div>
+                <div class="empty-desc">Seu personal ainda não criou um plano de treino para você.</div>
+              </div>
+            </div>
+
+            <div style="margin-top:var(--space-5);padding-top:var(--space-4);border-top:1px solid var(--forte-border);">
+              <button class="btn btn-primary btn-block" onclick="toast('IA Treino em breve! 🤖','success')">
+                🤖 Sugestão de treino com IA
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sessões recentes -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🕐 Últimas Sessões</span>
+            <a href="evolucao.html" class="btn btn-ghost btn-sm">Evolução →</a>
+          </div>
+          <div class="card-body" id="historico-sessoes">
+            <div class="empty-state" style="padding:var(--space-5);">
+              <div class="empty-icon">📋</div>
+              <div class="empty-title">Sem histórico ainda</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script>
+  const WORKER = 'https://forte-worker.SEU_SUBDOMINIO.workers.dev';
+
+  const h = new Date().getHours();
+  document.getElementById('greeting').textContent = (h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite') + '! 💪';
+  document.getElementById('today-date').textContent = new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+
+  const MOCK_PLAN = {
+    name: 'Programa Força + Definição',
+    goal: 'Ganho de massa e definição muscular',
+    frequency: 3,
+    days: [
+      {
+        label: 'A', title: 'Peito + Tríceps',
+        exercises: [
+          { exercise_name:'Supino reto', sets:4, reps:'8-10', rest_seconds:90 },
+          { exercise_name:'Supino inclinado', sets:3, reps:'10-12', rest_seconds:60 },
+          { exercise_name:'Crucifixo', sets:3, reps:'12-15', rest_seconds:60 },
+          { exercise_name:'Tríceps corda', sets:4, reps:'12-15', rest_seconds:60 },
+          { exercise_name:'Tríceps testa', sets:3, reps:'10-12', rest_seconds:60 },
+        ]
+      },
+      {
+        label: 'B', title: 'Costas + Bíceps',
+        exercises: [
+          { exercise_name:'Barra fixa', sets:4, reps:'Máx', rest_seconds:120 },
+          { exercise_name:'Remada curvada', sets:4, reps:'8-10', rest_seconds:90 },
+          { exercise_name:'Pulley frente', sets:3, reps:'10-12', rest_seconds:60 },
+          { exercise_name:'Rosca direta', sets:4, reps:'10-12', rest_seconds:60 },
+          { exercise_name:'Rosca martelo', sets:3, reps:'12-15', rest_seconds:60 },
+        ]
+      },
+      {
+        label: 'C', title: 'Pernas + Ombros',
+        exercises: [
+          { exercise_name:'Agachamento livre', sets:4, reps:'8-10', rest_seconds:120 },
+          { exercise_name:'Leg press 45°', sets:3, reps:'12-15', rest_seconds:90 },
+          { exercise_name:'Cadeira extensora', sets:3, reps:'15-20', rest_seconds:60 },
+          { exercise_name:'Desenvolvimento', sets:4, reps:'10-12', rest_seconds:90 },
+          { exercise_name:'Elevação lateral', sets:3, reps:'15-20', rest_seconds:60 },
+        ]
+      }
+    ]
+  };
+
+  let activeDayIndex = 0;
+
+  async function loadDashboard() {
+    try {
+      const res = await fetch(`${WORKER}/api/student/dashboard`, { credentials:'include' });
+      if (res.status === 401) { window.location.href = '../login.html'; return; }
+      const d = await res.json();
+      renderAll(d);
+    } catch {
+      renderMock();
+    }
+  }
+
+  function renderMock() {
+    document.getElementById('sidebar-avatar').textContent = 'A';
+    document.getElementById('sidebar-name').textContent = 'Ana Lima';
+
+    // Próxima sessão
+    const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate()+1); tomorrow.setHours(7,0,0,0);
+    document.getElementById('nsc-title').textContent = 'Treino B — Costas + Bíceps';
+    document.getElementById('nsc-meta').textContent = `${tomorrow.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'short'})} às 07:00 · 60 min`;
+
+    document.getElementById('streak-count').textContent = '14';
+    document.getElementById('total-treinos').textContent = '47 treinos';
+
+    document.getElementById('stat-sessoes-mes').textContent = '10';
+    document.getElementById('stat-sessoes-prev').textContent = '8';
+    document.getElementById('stat-sessoes-delta').innerHTML = 'de <span id="stat-sessoes-prev">8</span> mês anterior';
+    document.getElementById('stat-freq').textContent = '83%';
+    document.getElementById('stat-peso').textContent = '72,4';
+    document.getElementById('stat-peso-delta').textContent = '▼ 1,2 kg este mês';
+    document.getElementById('stat-peso-delta').className = 'stat-delta up';
+    document.getElementById('stat-pag-status').textContent = 'Pago';
+    document.getElementById('stat-pag-status').style.color = 'var(--forte-success)';
+    document.getElementById('stat-pag-delta').textContent = 'Vence em 30 dias';
+    document.getElementById('pag-icon').style.color = 'var(--forte-success)';
+
+    renderPlano(MOCK_PLAN);
+    renderHistorico([
+      { scheduled_at: Date.now()/1000 - 86400,   status:'realizada', duration_min:60, notes:'Treino A' },
+      { scheduled_at: Date.now()/1000 - 86400*3, status:'realizada', duration_min:60, notes:'Treino C' },
+      { scheduled_at: Date.now()/1000 - 86400*5, status:'realizada', duration_min:60, notes:'Treino B' },
+      { scheduled_at: Date.now()/1000 - 86400*7, status:'falta',     duration_min:60, notes:'Treino A' },
+    ]);
+  }
+
+  function renderPlano(plan) {
+    if (!plan) return;
+    document.getElementById('plano-badge').textContent = `${plan.frequency}x/sem`;
+
+    const tabsEl = document.getElementById('treino-tabs');
+    tabsEl.innerHTML = plan.days.map((d,i) => `
+      <button class="tab-btn ${i===0?'active':''}" onclick="switchDay(${i})" id="tab-day-${i}">
+        Treino ${d.label} · ${d.title}
+      </button>`).join('');
+
+    renderExercicios(plan.days[0]);
+  }
+
+  function switchDay(idx) {
+    activeDayIndex = idx;
+    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+    renderExercicios(MOCK_PLAN.days[idx]);
+  }
+
+  function renderExercicios(day) {
+    document.getElementById('treino-exercicios').innerHTML = `
+      <div style="margin-bottom:var(--space-4);padding-bottom:var(--space-3);border-bottom:1px solid var(--forte-border);">
+        <div style="font-size:var(--text-sm);font-weight:700;color:var(--forte-accent);">Treino ${day.label} — ${day.title}</div>
+        <div style="font-size:var(--text-xs);color:var(--forte-text-muted);">${day.exercises.length} exercícios</div>
+      </div>
+      ${day.exercises.map((ex,i) => `
+        <div style="display:flex;align-items:flex-start;gap:var(--space-3);padding:var(--space-3) 0;border-bottom:1px solid var(--forte-border);">
+          <div style="width:26px;height:26px;background:var(--forte-accent-light);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);font-weight:800;color:var(--forte-accent);flex-shrink:0;">${i+1}</div>
+          <div style="flex:1;">
+            <div style="font-size:var(--text-sm);font-weight:700;">${ex.exercise_name}</div>
+            <div style="font-size:var(--text-xs);color:var(--forte-text-muted);margin-top:2px;">
+              ${ex.sets} séries × ${ex.reps} reps · descanso ${ex.rest_seconds}s
+            </div>
+          </div>
+        </div>`).join('')}`;
+  }
+
+  function renderHistorico(sessoes) {
+    const el = document.getElementById('historico-sessoes');
+    if (!sessoes.length) return;
+    el.innerHTML = sessoes.map(s => {
+      const d = new Date(s.scheduled_at*1000);
+      const dateStr = d.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'});
+      return `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-3) 0;border-bottom:1px solid var(--forte-border);">
+          <div>
+            <div style="font-size:var(--text-sm);font-weight:600;">${s.notes || 'Treino'}</div>
+            <div style="font-size:var(--text-xs);color:var(--forte-text-muted);">${dateStr} · ${s.duration_min} min</div>
+          </div>
+          <span class="badge ${s.status==='realizada'?'badge-success':'badge-danger'}">${s.status==='realizada'?'Realizada':'Falta'}</span>
+        </div>`;
+    }).join('');
+  }
+
+  document.getElementById('btn-confirmar').addEventListener('click', async () => {
+    toast('Presença confirmada! ✅', 'success');
+    document.getElementById('btn-confirmar').textContent = '✓ Confirmado!';
+    document.getElementById('btn-confirmar').disabled = true;
+  });
+
+  function toast(msg, type='success') {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.textContent = msg;
+    document.getElementById('toasts').appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+
+  document.getElementById('btn-alto-contraste').addEventListener('click', () => {
+    document.body.classList.toggle('theme-alto-contraste');
+    localStorage.setItem('forte-tema', document.body.className);
+  });
+  const saved = localStorage.getItem('forte-tema');
+  if (saved) document.body.className = saved;
+
+  loadDashboard();
+</script>
+
+</body>
+</html>

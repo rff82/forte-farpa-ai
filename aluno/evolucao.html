@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Evolução — farpa Forte</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../themes.css">
+  <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../forte.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">F</div>
+      <div class="sidebar-logo-info">
+        <div class="sidebar-logo-name">forte</div>
+        <div class="sidebar-logo-sub">Meu painel</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-label">Minha área</span>
+        <a class="nav-item" href="dashboard.html"><span class="nav-icon">⊞</span> Início</a>
+        <a class="nav-item" href="#"><span class="nav-icon">📅</span> Minha Agenda</a>
+        <a class="nav-item active" href="evolucao.html"><span class="nav-icon">📈</span> Evolução</a>
+        <a class="nav-item" href="#"><span class="nav-icon">💳</span> Pagamentos</a>
+        <a class="nav-item" href="#"><span class="nav-icon">🏋️</span> Meu Treino</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Conta</span>
+        <a class="nav-item" href="../login.html"><span class="nav-icon">↩</span> Sair</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar">A</div>
+        <div class="user-info">
+          <div class="user-name">Ana Lima</div>
+          <div class="user-role">Personal Training</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="page-title">Minha Evolução</span>
+        <span class="page-subtitle" id="evolucao-period">últimos 3 meses</span>
+      </div>
+      <div class="topbar-right">
+        <select class="form-input" id="period-select" onchange="updateCharts()" style="width:auto;font-size:var(--text-sm);">
+          <option value="3">Últimos 3 meses</option>
+          <option value="6">Últimos 6 meses</option>
+          <option value="12">Último ano</option>
+        </select>
+        <button id="btn-alto-contraste" aria-label="Ativar alto contraste">⊙ Contraste</button>
+        <button class="btn btn-primary btn-sm" onclick="openModal()">+ Nova Medição</button>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- Métricas atuais -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-value" id="m-peso">72<span class="unit">,4 kg</span></div>
+          <div class="metric-label">Peso</div>
+          <div class="metric-delta down-good" id="d-peso">▼ 1,2 kg desde o início</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="m-gordura">18<span class="unit">%</span></div>
+          <div class="metric-label">% Gordura</div>
+          <div class="metric-delta down-good" id="d-gordura">▼ 3,2% desde o início</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="m-cintura">76<span class="unit"> cm</span></div>
+          <div class="metric-label">Cintura</div>
+          <div class="metric-delta down-good" id="d-cintura">▼ 4 cm desde o início</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="m-bicep">35<span class="unit"> cm</span></div>
+          <div class="metric-label">Bícep</div>
+          <div class="metric-delta up-good" id="d-bicep">▲ 2 cm desde o início</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="m-peito">95<span class="unit"> cm</span></div>
+          <div class="metric-label">Peito</div>
+          <div class="metric-delta up-good">▲ 3 cm desde o início</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="m-coxa">55<span class="unit"> cm</span></div>
+          <div class="metric-label">Coxa</div>
+          <div class="metric-delta up-good">▲ 2,5 cm desde o início</div>
+        </div>
+      </div>
+
+      <!-- Gráficos -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5);margin-bottom:var(--space-5);">
+
+        <!-- Gráfico de peso -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">⚖ Peso (kg)</span>
+            <span style="font-size:var(--text-xs);color:var(--forte-text-muted);font-family:var(--font-mono);" id="peso-range"></span>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" style="height:180px;">
+              <svg id="chart-peso" viewBox="0 0 400 160" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="grad-peso" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#F97316" stop-opacity="0.3"/>
+                    <stop offset="100%" stop-color="#F97316" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <!-- gerado por JS -->
+              </svg>
+            </div>
+            <div id="peso-labels" style="display:flex;justify-content:space-between;margin-top:var(--space-2);font-size:var(--text-xs);color:var(--forte-text-muted);font-family:var(--font-mono);"></div>
+          </div>
+        </div>
+
+        <!-- Gráfico de % gordura -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🔥 % Gordura Corporal</span>
+            <span style="font-size:var(--text-xs);color:var(--forte-text-muted);font-family:var(--font-mono);" id="gordura-range"></span>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" style="height:180px;">
+              <svg id="chart-gordura" viewBox="0 0 400 160" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="grad-gordura" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#10B981" stop-opacity="0.3"/>
+                    <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div id="gordura-labels" style="display:flex;justify-content:space-between;margin-top:var(--space-2);font-size:var(--text-xs);color:var(--forte-text-muted);font-family:var(--font-mono);"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Histórico de medições -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📋 Histórico de Medições</span>
+        </div>
+        <div class="card-body-flush">
+          <table class="forte-table" id="tabela-medicoes">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Peso</th>
+                <th>Gordura</th>
+                <th>Peito</th>
+                <th>Cintura</th>
+                <th>Quadril</th>
+                <th>Bícep</th>
+                <th>Coxa</th>
+                <th>Panturrilha</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-medicoes">
+              <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-title">Carregando...</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Nova Medição -->
+<div class="modal-overlay" id="modal-medicao">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Nova Medição</span>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal()" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="form-medicao" onsubmit="saveMedicao(event)">
+        <div class="form-group">
+          <label class="form-label" for="med-data">Data da medição</label>
+          <input class="form-input" type="date" id="med-data" required>
+        </div>
+        <div style="margin-bottom:var(--space-4);">
+          <div style="font-size:var(--text-xs);font-weight:700;color:var(--forte-accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--space-3);">Composição Corporal</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="med-peso">Peso (kg)</label>
+              <input class="form-input" type="number" id="med-peso" step="0.1" placeholder="72.4">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="med-gordura">% Gordura</label>
+              <input class="form-input" type="number" id="med-gordura" step="0.1" placeholder="18.0">
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:var(--text-xs);font-weight:700;color:var(--forte-accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--space-3);">Medidas (cm)</div>
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label class="form-label" for="med-peito">Peito</label>
+              <input class="form-input" type="number" id="med-peito" step="0.1" placeholder="95">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="med-cintura">Cintura</label>
+              <input class="form-input" type="number" id="med-cintura" step="0.1" placeholder="76">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="med-quadril">Quadril</label>
+              <input class="form-input" type="number" id="med-quadril" step="0.1" placeholder="98">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="med-bicep">Bícep</label>
+              <input class="form-input" type="number" id="med-bicep" step="0.1" placeholder="35">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="med-coxa">Coxa</label>
+              <input class="form-input" type="number" id="med-coxa" step="0.1" placeholder="55">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="med-panturrilha">Panturrilha</label>
+              <input class="form-input" type="number" id="med-panturrilha" step="0.1" placeholder="37">
+            </div>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:var(--space-3);">
+          <label class="form-label" for="med-obs">Observações</label>
+          <textarea class="form-input" id="med-obs" rows="2" placeholder="Como você está se sentindo..."></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="document.getElementById('form-medicao').requestSubmit()">Salvar Medição</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script>
+  const WORKER = 'https://forte-worker.SEU_SUBDOMINIO.workers.dev';
+
+  const MOCK_MEDICOES = [
+    { measured_at: mts(2026,0,15), weight_kg:73.6, body_fat_pct:21.2, chest_cm:92, waist_cm:80, hip_cm:100, bicep_cm:33, thigh_cm:52.5, calf_cm:36 },
+    { measured_at: mts(2026,1,15), weight_kg:73.1, body_fat_pct:20.5, chest_cm:93, waist_cm:79, hip_cm:99,  bicep_cm:33.5,thigh_cm:53,   calf_cm:36.2 },
+    { measured_at: mts(2026,2,15), weight_kg:72.8, body_fat_pct:19.3, chest_cm:94, waist_cm:78, hip_cm:99,  bicep_cm:34,  thigh_cm:54,   calf_cm:36.5 },
+    { measured_at: mts(2026,3,1),  weight_kg:72.4, body_fat_pct:18.0, chest_cm:95, waist_cm:76, hip_cm:98,  bicep_cm:35,  thigh_cm:55,   calf_cm:37   },
+  ];
+
+  function mts(y,m,d) { return Math.floor(new Date(y,m,d).getTime()/1000); }
+
+  async function loadEvolucao() {
+    let medicoes;
+    try {
+      const res = await fetch(`${WORKER}/api/student/measurements`, { credentials:'include' });
+      if (res.status === 401) { window.location.href = '../login.html'; return; }
+      medicoes = await res.json();
+    } catch { medicoes = MOCK_MEDICOES; }
+    renderTabela(medicoes);
+    renderCharts(medicoes);
+  }
+
+  function renderTabela(m) {
+    const tbody = document.getElementById('tbody-medicoes');
+    if (!m.length) {
+      tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📏</div><div class="empty-title">Sem medições ainda</div><div class="empty-desc">Registre sua primeira medição!</div></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = [...m].reverse().map(r => `
+      <tr>
+        <td style="font-family:var(--font-mono);font-size:var(--text-xs);">${new Date(r.measured_at*1000).toLocaleDateString('pt-BR')}</td>
+        <td style="font-weight:700;font-family:var(--font-mono);">${r.weight_kg ?? '—'} kg</td>
+        <td style="font-family:var(--font-mono);">${r.body_fat_pct ?? '—'}%</td>
+        <td style="font-family:var(--font-mono);">${r.chest_cm ?? '—'}</td>
+        <td style="font-family:var(--font-mono);">${r.waist_cm ?? '—'}</td>
+        <td style="font-family:var(--font-mono);">${r.hip_cm ?? '—'}</td>
+        <td style="font-family:var(--font-mono);">${r.bicep_cm ?? '—'}</td>
+        <td style="font-family:var(--font-mono);">${r.thigh_cm ?? '—'}</td>
+        <td style="font-family:var(--font-mono);">${r.calf_cm ?? '—'}</td>
+      </tr>`).join('');
+  }
+
+  function renderCharts(medicoes) {
+    if (medicoes.length < 2) return;
+    drawLineChart('chart-peso',   'peso-labels',   'grad-peso',    medicoes.map(m=>m.weight_kg),    '#F97316', 'kg');
+    drawLineChart('chart-gordura','gordura-labels','grad-gordura', medicoes.map(m=>m.body_fat_pct), '#10B981', '%');
+    document.getElementById('peso-range').textContent    = `${Math.min(...medicoes.map(m=>m.weight_kg))} – ${Math.max(...medicoes.map(m=>m.weight_kg))} kg`;
+    document.getElementById('gordura-range').textContent = `${Math.min(...medicoes.map(m=>m.body_fat_pct))} – ${Math.max(...medicoes.map(m=>m.body_fat_pct))}%`;
+  }
+
+  function drawLineChart(svgId, labelsId, gradId, values, color, unit) {
+    const svg = document.getElementById(svgId);
+    const W = 400, H = 160, PAD = 20;
+    const min = Math.min(...values), max = Math.max(...values);
+    const range = max - min || 1;
+    const n = values.length;
+
+    const pts = values.map((v, i) => ({
+      x: PAD + (i / (n-1)) * (W - PAD*2),
+      y: PAD + (1 - (v - min) / range) * (H - PAD*2)
+    }));
+
+    const linePath = pts.map((p,i) => `${i===0?'M':'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+    const areaPath = linePath + ` L${pts[pts.length-1].x},${H} L${pts[0].x},${H} Z`;
+
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${color}" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path d="${areaPath}" fill="url(#${gradId})"/>
+      <path d="${linePath}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      ${pts.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4" fill="${color}"/>`).join('')}
+      ${pts.map((p,i) => `<text x="${p.x.toFixed(1)}" y="${(p.y-8).toFixed(1)}" text-anchor="middle" font-size="10" fill="${color}" font-family="JetBrains Mono,monospace" font-weight="700">${values[i]}${unit}</text>`).join('')}`;
+
+    document.getElementById(labelsId).innerHTML = MOCK_MEDICOES.map(m =>
+      `<span>${new Date(m.measured_at*1000).toLocaleDateString('pt-BR',{month:'short',day:'numeric'})}</span>`
+    ).join('');
+  }
+
+  function updateCharts() { loadEvolucao(); }
+
+  async function saveMedicao(e) {
+    e.preventDefault();
+    const payload = {
+      measured_at: Math.floor(new Date(document.getElementById('med-data').value).getTime()/1000),
+      weight_kg:   parseFloat(document.getElementById('med-peso').value) || null,
+      body_fat_pct:parseFloat(document.getElementById('med-gordura').value) || null,
+      chest_cm:    parseFloat(document.getElementById('med-peito').value) || null,
+      waist_cm:    parseFloat(document.getElementById('med-cintura').value) || null,
+      hip_cm:      parseFloat(document.getElementById('med-quadril').value) || null,
+      bicep_cm:    parseFloat(document.getElementById('med-bicep').value) || null,
+      thigh_cm:    parseFloat(document.getElementById('med-coxa').value) || null,
+      calf_cm:     parseFloat(document.getElementById('med-panturrilha').value) || null,
+      notes:       document.getElementById('med-obs').value,
+    };
+    try {
+      await fetch(`${WORKER}/api/student/measurements`, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    } catch {}
+    toast('Medição registrada! 📏', 'success');
+    closeModal();
+    loadEvolucao();
+  }
+
+  function openModal() {
+    document.getElementById('modal-medicao').classList.add('open');
+    document.getElementById('med-data').value = new Date().toISOString().slice(0,10);
+  }
+  function closeModal() { document.getElementById('modal-medicao').classList.remove('open'); }
+
+  function toast(msg, type='success') {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.textContent = msg;
+    document.getElementById('toasts').appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+
+  document.getElementById('btn-alto-contraste').addEventListener('click', () => {
+    document.body.classList.toggle('theme-alto-contraste');
+    localStorage.setItem('forte-tema', document.body.className);
+  });
+  const saved = localStorage.getItem('forte-tema');
+  if (saved) document.body.className = saved;
+
+  loadEvolucao();
+</script>
+
+</body>
+</html>

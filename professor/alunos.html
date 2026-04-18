@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alunos — farpa Forte</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../themes.css">
+  <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../forte.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">F</div>
+      <div class="sidebar-logo-info">
+        <div class="sidebar-logo-name">forte</div>
+        <div class="sidebar-logo-sub">Professor</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-label">Principal</span>
+        <a class="nav-item" href="dashboard.html"><span class="nav-icon">⊞</span> Dashboard</a>
+        <a class="nav-item" href="agenda.html"><span class="nav-icon">📅</span> Agenda</a>
+        <a class="nav-item active" href="alunos.html"><span class="nav-icon">👥</span> Alunos</a>
+        <a class="nav-item" href="pagamentos.html"><span class="nav-icon">💳</span> Pagamentos</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Conta</span>
+        <a class="nav-item" href="#"><span class="nav-icon">⚙</span> Configurações</a>
+        <a class="nav-item" href="../index.html"><span class="nav-icon">↩</span> Início</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar" id="sidebar-avatar">R</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-name">Professor</div>
+          <div class="user-role">Personal Trainer</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="page-title">Alunos</span>
+        <span class="page-subtitle" id="alunos-count">carregando...</span>
+      </div>
+      <div class="topbar-right">
+        <button id="btn-alto-contraste" aria-label="Ativar alto contraste">⊙ Contraste</button>
+        <button class="btn btn-primary btn-sm" onclick="openModal()">+ Novo Aluno</button>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- Filtros -->
+      <div style="display:flex;gap:var(--space-4);margin-bottom:var(--space-5);flex-wrap:wrap;align-items:center;">
+        <div class="search-wrap" style="flex:1;min-width:200px;max-width:360px;">
+          <span class="search-icon">🔍</span>
+          <input class="form-input search-wrap" type="search" id="search-alunos" placeholder="Buscar aluno..." oninput="filterAlunos()">
+        </div>
+        <select class="form-input" id="filter-status" style="width:auto;min-width:140px;" onchange="filterAlunos()">
+          <option value="">Todos os status</option>
+          <option value="ativo">Ativo</option>
+          <option value="inativo">Inativo</option>
+          <option value="pausado">Pausado</option>
+        </select>
+        <select class="form-input" id="filter-plano" style="width:auto;min-width:160px;" onchange="filterAlunos()">
+          <option value="">Todos os planos</option>
+          <option value="mensal">Mensal</option>
+          <option value="por_sessao">Por sessão</option>
+          <option value="trimestral">Trimestral</option>
+        </select>
+      </div>
+
+      <!-- Tabela -->
+      <div class="card">
+        <div class="card-body-flush">
+          <table class="forte-table" id="tabela-alunos">
+            <thead>
+              <tr>
+                <th>Aluno</th>
+                <th>Objetivo</th>
+                <th>Plano</th>
+                <th>Sessões/sem</th>
+                <th>Valor</th>
+                <th>Status</th>
+                <th>Pagamento</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbody-alunos">
+              <tr><td colspan="8"><div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-title">Carregando...</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Novo Aluno -->
+<div class="modal-overlay" id="modal-aluno">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Cadastrar Novo Aluno</span>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal()" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="form-aluno" onsubmit="saveAluno(event)">
+
+        <div style="margin-bottom:var(--space-5);">
+          <div style="font-size:var(--text-xs);font-weight:700;color:var(--forte-accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--space-3);">Dados Pessoais</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="a-nome">Nome completo *</label>
+              <input class="form-input" type="text" id="a-nome" required placeholder="Ana Lima">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="a-email">E-mail *</label>
+              <input class="form-input" type="email" id="a-email" required placeholder="ana@email.com">
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="a-telefone">Telefone / WhatsApp</label>
+              <input class="form-input" type="tel" id="a-telefone" placeholder="(11) 99999-0000">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="a-nascimento">Data de nascimento</label>
+              <input class="form-input" type="date" id="a-nascimento">
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:var(--space-5);">
+          <div style="font-size:var(--text-xs);font-weight:700;color:var(--forte-accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--space-3);">Plano & Objetivo</div>
+          <div class="form-group">
+            <label class="form-label" for="a-objetivo">Objetivo principal</label>
+            <input class="form-input" type="text" id="a-objetivo" placeholder="Ex: Emagrecimento, ganho de massa...">
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="a-plano">Tipo de plano</label>
+              <select class="form-input" id="a-plano">
+                <option value="mensal">Mensal</option>
+                <option value="por_sessao">Por sessão</option>
+                <option value="semanal">Semanal</option>
+                <option value="trimestral">Trimestral</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="a-sessoes">Sessões por semana</label>
+              <select class="form-input" id="a-sessoes">
+                <option value="1">1x por semana</option>
+                <option value="2">2x por semana</option>
+                <option value="3" selected>3x por semana</option>
+                <option value="4">4x por semana</option>
+                <option value="5">5x por semana</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="a-valor">Valor do plano (R$)</label>
+            <input class="form-input" type="number" id="a-valor" min="0" step="0.01" placeholder="350.00">
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:var(--text-xs);font-weight:700;color:var(--forte-accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--space-3);">Anamnese Rápida</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2);margin-bottom:var(--space-3);">
+            <label style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--forte-text-secondary);cursor:pointer;">
+              <input type="checkbox" id="a-heart" style="accent-color:var(--forte-accent);"> Problema cardíaco
+            </label>
+            <label style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--forte-text-secondary);cursor:pointer;">
+              <input type="checkbox" id="a-hiper" style="accent-color:var(--forte-accent);"> Hipertensão
+            </label>
+            <label style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--forte-text-secondary);cursor:pointer;">
+              <input type="checkbox" id="a-diab" style="accent-color:var(--forte-accent);"> Diabetes
+            </label>
+            <label style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--forte-text-secondary);cursor:pointer;">
+              <input type="checkbox" id="a-joint" style="accent-color:var(--forte-accent);"> Dores articulares
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="a-lesoes">Lesões ou restrições</label>
+            <textarea class="form-input" id="a-lesoes" rows="2" placeholder="Ex: Hérnia lombar L4-L5, joelho direito..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="a-obs">Observações gerais</label>
+            <textarea class="form-input" id="a-obs" rows="2" placeholder="Horários preferidos, preferências de treino..."></textarea>
+          </div>
+        </div>
+
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="document.getElementById('form-aluno').requestSubmit()">Salvar Aluno</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script>
+  const WORKER = 'https://forte-worker.SEU_SUBDOMINIO.workers.dev';
+  let todosAlunos = [];
+
+  const MOCK = [
+    { id:'1', name:'Ana Lima', email:'ana@email.com', objective:'Emagrecimento', plan_type:'mensal', sessions_per_week:3, plan_value:350, status:'ativo', payment_status:'pago' },
+    { id:'2', name:'Carlos Mendes', email:'carlos@email.com', objective:'Ganho de massa', plan_type:'mensal', sessions_per_week:4, plan_value:480, status:'ativo', payment_status:'pendente' },
+    { id:'3', name:'Fernanda Costa', email:'fernanda@email.com', objective:'Condicionamento', plan_type:'por_sessao', sessions_per_week:2, plan_value:120, status:'ativo', payment_status:'pago' },
+    { id:'4', name:'Bruno Alves', email:'bruno@email.com', objective:'Força', plan_type:'mensal', sessions_per_week:3, plan_value:350, status:'ativo', payment_status:'atrasado' },
+    { id:'5', name:'Juliana Santos', email:'ju@email.com', objective:'Definição', plan_type:'trimestral', sessions_per_week:5, plan_value:1200, status:'pausado', payment_status:'pendente' },
+  ];
+
+  async function loadAlunos() {
+    try {
+      const res = await fetch(`${WORKER}/api/professor/students`, { credentials: 'include' });
+      if (res.status === 401) { window.location.href = '../login.html'; return; }
+      todosAlunos = await res.json();
+    } catch {
+      todosAlunos = MOCK;
+    }
+    renderTabela(todosAlunos);
+    document.getElementById('alunos-count').textContent = `${todosAlunos.filter(a=>a.status==='ativo').length} ativos de ${todosAlunos.length} total`;
+  }
+
+  function renderTabela(alunos) {
+    const tbody = document.getElementById('tbody-alunos');
+    if (!alunos.length) {
+      tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">👤</div><div class="empty-title">Nenhum aluno encontrado</div><div class="empty-desc">Cadastre seu primeiro aluno clicando em "+ Novo Aluno".</div></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = alunos.map(a => `
+      <tr>
+        <td>
+          <div class="td-name">
+            <div class="avatar">${initials(a.name)}</div>
+            <div>
+              <div style="font-weight:700;">${a.name}</div>
+              <div class="td-secondary">${a.email}</div>
+            </div>
+          </div>
+        </td>
+        <td style="color:var(--forte-text-secondary);">${a.objective || '—'}</td>
+        <td><span class="badge badge-blue">${planLabel(a.plan_type)}</span></td>
+        <td style="text-align:center;font-family:var(--font-mono);">${a.sessions_per_week}x/sem</td>
+        <td style="font-family:var(--font-mono);font-weight:700;">R$ ${Number(a.plan_value||0).toFixed(0)}</td>
+        <td><span class="badge ${statusBadge(a.status)}">${a.status}</span></td>
+        <td><span class="badge ${pagBadge(a.payment_status)}">${a.payment_status || 'pendente'}</span></td>
+        <td>
+          <div style="display:flex;gap:var(--space-2);">
+            <button class="btn btn-ghost btn-icon btn-sm" onclick="editAluno('${a.id}')" title="Editar">✏️</button>
+            <button class="btn btn-ghost btn-icon btn-sm" onclick="viewAluno('${a.id}')" title="Ver ficha">👁</button>
+          </div>
+        </td>
+      </tr>`).join('');
+  }
+
+  function filterAlunos() {
+    const q = document.getElementById('search-alunos').value.toLowerCase();
+    const status = document.getElementById('filter-status').value;
+    const plano = document.getElementById('filter-plano').value;
+    const filtered = todosAlunos.filter(a =>
+      (!q || a.name.toLowerCase().includes(q) || a.email.toLowerCase().includes(q)) &&
+      (!status || a.status === status) &&
+      (!plano || a.plan_type === plano)
+    );
+    renderTabela(filtered);
+  }
+
+  async function saveAluno(e) {
+    e.preventDefault();
+    const payload = {
+      name: document.getElementById('a-nome').value,
+      email: document.getElementById('a-email').value,
+      phone: document.getElementById('a-telefone').value,
+      objective: document.getElementById('a-objetivo').value,
+      plan_type: document.getElementById('a-plano').value,
+      sessions_per_week: parseInt(document.getElementById('a-sessoes').value),
+      plan_value: parseFloat(document.getElementById('a-valor').value || 0),
+      anamnese: {
+        has_heart_issue: document.getElementById('a-heart').checked ? 1 : 0,
+        has_hypertension: document.getElementById('a-hiper').checked ? 1 : 0,
+        has_diabetes: document.getElementById('a-diab').checked ? 1 : 0,
+        has_joint_pain: document.getElementById('a-joint').checked ? 1 : 0,
+        injuries: document.getElementById('a-lesoes').value,
+        observations: document.getElementById('a-obs').value,
+      }
+    };
+    try {
+      await fetch(`${WORKER}/api/professor/students`, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    } catch {}
+    toast('Aluno cadastrado com sucesso! 🎉', 'success');
+    closeModal();
+    loadAlunos();
+  }
+
+  function openModal() {
+    document.getElementById('modal-aluno').classList.add('open');
+    document.getElementById('form-aluno').reset();
+  }
+  function closeModal() { document.getElementById('modal-aluno').classList.remove('open'); }
+  function editAluno(id) { toast('Edição em breve!', 'success'); }
+  function viewAluno(id) { toast('Ficha detalhada em breve!', 'success'); }
+
+  function initials(name) { return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+  function planLabel(p) { return {mensal:'Mensal',por_sessao:'Por sessão',semanal:'Semanal',trimestral:'Trimestral'}[p]||p; }
+  function statusBadge(s) { return {ativo:'badge-success',inativo:'badge-gray',pausado:'badge-warning'}[s]||'badge-gray'; }
+  function pagBadge(s) { return {pago:'badge-success',pendente:'badge-warning',atrasado:'badge-danger'}[s]||'badge-gray'; }
+
+  function toast(msg, type='success') {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.textContent = msg;
+    document.getElementById('toasts').appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+
+  document.getElementById('btn-alto-contraste').addEventListener('click', () => {
+    document.body.classList.toggle('theme-alto-contraste');
+    localStorage.setItem('forte-tema', document.body.className);
+  });
+  const saved = localStorage.getItem('forte-tema');
+  if (saved) document.body.className = saved;
+
+  loadAlunos();
+</script>
+
+</body>
+</html>

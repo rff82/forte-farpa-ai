@@ -1,0 +1,34 @@
+{
+  "name": "forte-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-04-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "forte-farpa-ai-db",
+      "database_id": "224c3411-1ddf-4805-a82d-316568ddbb71"
+    }
+  ],
+
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      "id": "048067c702bf426d948203c9cc185c95"
+    }
+  ],
+
+  "ai": {
+    "binding": "AI"
+  },
+
+  // Variáveis PÚBLICAS — não-sensíveis
+  // CLIENT_SECRET e SESSION_COOKIE_SECRET ficam em `wrangler secret put`
+  "vars": {
+    "ENVIRONMENT":  "production",
+    "PRODUCT_NAME": "forte",
+    "CLIENT_ID":    "COLE_O_CLIENT_ID_AQUI"
+  }
+}
