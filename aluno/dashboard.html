@@ -10,32 +10,33 @@
   <link rel="stylesheet" href="../tokens.css">
   <link rel="stylesheet" href="../themes.css">
   <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../logo-system.css">
   <link rel="stylesheet" href="../forte.css">
 </head>
-<body>
+<body style="--logo-mark-bg: var(--forte-accent);">
 
 <div class="app-shell">
   <!-- Sidebar aluno -->
   <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="sidebar-logo-mark">F</div>
-      <div class="sidebar-logo-info">
-        <div class="sidebar-logo-name">forte</div>
-        <div class="sidebar-logo-sub">Meu painel</div>
+    <a href="dashboard.html" class="farpa-logo" style="padding:var(--space-5);border-bottom:1px solid var(--forte-border);">
+      <div class="farpa-logo-mark farpa-logo-mark--md">F</div>
+      <div class="farpa-logo-text">
+        <span class="farpa-logo-wordmark">farpa</span>
+        <span class="farpa-logo-sublabel">Aluno</span>
       </div>
-    </div>
+    </a>
     <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-label">Minha área</span>
-        <a class="nav-item active" href="dashboard.html"><span class="nav-icon">⊞</span> Início</a>
-        <a class="nav-item" href="#agenda"><span class="nav-icon">📅</span> Minha Agenda</a>
-        <a class="nav-item" href="evolucao.html"><span class="nav-icon">📈</span> Evolução</a>
-        <a class="nav-item" href="#pagamentos"><span class="nav-icon">💳</span> Pagamentos</a>
-        <a class="nav-item" href="#treino"><span class="nav-icon">🏋️</span> Meu Treino</a>
+        <a class="nav-item active" href="dashboard.html"><span class="nav-icon"><span data-icon="grid"></span></span> Início</a>
+        <a class="nav-item" href="#agenda"><span class="nav-icon"><span data-icon="calendar"></span></span> Minha Agenda</a>
+        <a class="nav-item" href="evolucao.html"><span class="nav-icon"><span data-icon="trending-up"></span></span> Evolução</a>
+        <a class="nav-item" href="#pagamentos"><span class="nav-icon"><span data-icon="credit-card"></span></span> Pagamentos</a>
+        <a class="nav-item" href="#treino"><span class="nav-icon"><span data-icon="dumbbell"></span></span> Meu Treino</a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">Conta</span>
-        <a class="nav-item" href="../login.html"><span class="nav-icon">↩</span> Sair</a>
+        <a class="nav-item" href="../login.html"><span class="nav-icon"><span data-icon="log-out"></span></span> Sair</a>
       </div>
     </nav>
     <div class="sidebar-footer">
@@ -56,7 +57,7 @@
         <span class="page-subtitle" id="today-date"></span>
       </div>
       <div class="topbar-right">
-        <button id="btn-alto-contraste" aria-label="Ativar alto contraste">⊙ Contraste</button>
+        <button id="btn-alto-contraste" aria-label="Ativar alto contraste"><span data-icon="contrast"></span> Contraste</button>
       </div>
     </header>
 
@@ -67,7 +68,7 @@
 
         <!-- Próxima sessão -->
         <div class="next-session-card" id="next-session-card">
-          <div class="nsc-label">📅 Próxima Sessão</div>
+          <div class="nsc-label"><span data-icon="calendar"></span> Próxima Sessão</div>
           <div class="nsc-title" id="nsc-title">—</div>
           <div class="nsc-meta" id="nsc-meta">—</div>
           <div class="nsc-actions">
@@ -78,7 +79,7 @@
 
         <!-- Streak -->
         <div class="streak-card">
-          <div class="streak-flame">🔥</div>
+          <div class="streak-flame"><span data-icon="flame"></span></div>
           <div>
             <div class="streak-count" id="streak-count">—</div>
             <div class="streak-label">Treinos seguidos</div>
@@ -94,22 +95,22 @@
       <!-- Stats -->
       <div class="stats-grid" style="margin-bottom:var(--space-6);">
         <div class="stat-card">
-          <div class="stat-header"><span class="stat-label">Sessões este mês</span><div class="stat-icon stat-icon-orange">📅</div></div>
+          <div class="stat-header"><span class="stat-label">Sessões este mês</span><div class="stat-icon stat-icon-orange"><span data-icon="calendar"></span></div></div>
           <div class="stat-value" id="stat-sessoes-mes">—</div>
           <div class="stat-delta neutral" id="stat-sessoes-delta">de <span id="stat-sessoes-prev">0</span> mês anterior</div>
         </div>
         <div class="stat-card">
-          <div class="stat-header"><span class="stat-label">Frequência</span><div class="stat-icon stat-icon-green">✓</div></div>
+          <div class="stat-header"><span class="stat-label">Frequência</span><div class="stat-icon stat-icon-green"><span data-icon="check"></span></div></div>
           <div class="stat-value" id="stat-freq">—%</div>
           <div class="stat-delta up">taxa de presença</div>
         </div>
         <div class="stat-card">
-          <div class="stat-header"><span class="stat-label">Peso atual</span><div class="stat-icon stat-icon-blue">⚖</div></div>
+          <div class="stat-header"><span class="stat-label">Peso atual</span><div class="stat-icon stat-icon-blue"><span data-icon="scale"></span></div></div>
           <div class="stat-value" id="stat-peso">—</div>
           <div class="stat-delta" id="stat-peso-delta">kg</div>
         </div>
         <div class="stat-card">
-          <div class="stat-header"><span class="stat-label">Pagamento</span><div class="stat-icon" id="pag-icon">💳</div></div>
+          <div class="stat-header"><span class="stat-label">Pagamento</span><div class="stat-icon" id="pag-icon"><span data-icon="credit-card"></span></div></div>
           <div class="stat-value" id="stat-pag-status">—</div>
           <div class="stat-delta" id="stat-pag-delta">—</div>
         </div>
@@ -121,7 +122,7 @@
         <!-- Plano de treino ativo -->
         <div class="card" id="section-treino">
           <div class="card-header">
-            <span class="card-title">🏋️ Meu Plano de Treino</span>
+            <span class="card-title"><span data-icon="dumbbell"></span> Meu Plano de Treino</span>
             <span class="badge badge-orange" id="plano-badge">—</span>
           </div>
           <div class="card-body" id="treino-body">
@@ -132,7 +133,7 @@
             </div>
             <div id="treino-exercicios">
               <div class="empty-state">
-                <div class="empty-icon">🏋️</div>
+                <div class="empty-icon"><span data-icon="dumbbell"></span></div>
                 <div class="empty-title">Plano não disponível</div>
                 <div class="empty-desc">Seu personal ainda não criou um plano de treino para você.</div>
               </div>
@@ -140,7 +141,7 @@
 
             <div style="margin-top:var(--space-5);padding-top:var(--space-4);border-top:1px solid var(--forte-border);">
               <button class="btn btn-primary btn-block" onclick="toast('IA Treino em breve! 🤖','success')">
-                🤖 Sugestão de treino com IA
+                <span data-icon="sparkles"></span> Sugestão de treino com IA
               </button>
             </div>
 
@@ -150,12 +151,12 @@
         <!-- Sessões recentes -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">🕐 Últimas Sessões</span>
+            <span class="card-title"><span data-icon="activity"></span> Últimas Sessões</span>
             <a href="evolucao.html" class="btn btn-ghost btn-sm">Evolução →</a>
           </div>
           <div class="card-body" id="historico-sessoes">
             <div class="empty-state" style="padding:var(--space-5);">
-              <div class="empty-icon">📋</div>
+              <div class="empty-icon"><span data-icon="inbox"></span></div>
               <div class="empty-title">Sem histórico ainda</div>
             </div>
           </div>
@@ -168,6 +169,7 @@
 
 <div class="toast-container" id="toasts"></div>
 
+<script src="../icons.js"></script>
 <script>
   const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
 

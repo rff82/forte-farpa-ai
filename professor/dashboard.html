@@ -10,46 +10,47 @@
   <link rel="stylesheet" href="../tokens.css">
   <link rel="stylesheet" href="../themes.css">
   <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../logo-system.css">
   <link rel="stylesheet" href="../forte.css">
 </head>
-<body>
+<body style="--logo-mark-bg: var(--forte-accent);">
 
 <div class="app-shell">
 
   <!-- Sidebar -->
   <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="sidebar-logo-mark">F</div>
-      <div class="sidebar-logo-info">
-        <div class="sidebar-logo-name">forte</div>
-        <div class="sidebar-logo-sub">Professor</div>
+    <a href="dashboard.html" class="farpa-logo" style="padding:var(--space-5);border-bottom:1px solid var(--forte-border);">
+      <div class="farpa-logo-mark farpa-logo-mark--md">F</div>
+      <div class="farpa-logo-text">
+        <span class="farpa-logo-wordmark">farpa</span>
+        <span class="farpa-logo-sublabel">Professor</span>
       </div>
-    </div>
+    </a>
 
     <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-label">Principal</span>
         <a class="nav-item active" href="dashboard.html">
-          <span class="nav-icon">⊞</span> Dashboard
+          <span class="nav-icon"><span data-icon="grid"></span></span> Dashboard
         </a>
         <a class="nav-item" href="agenda.html">
-          <span class="nav-icon">📅</span> Agenda
+          <span class="nav-icon"><span data-icon="calendar"></span></span> Agenda
         </a>
         <a class="nav-item" href="alunos.html">
-          <span class="nav-icon">👥</span> Alunos
+          <span class="nav-icon"><span data-icon="users"></span></span> Alunos
         </a>
         <a class="nav-item" href="pagamentos.html">
-          <span class="nav-icon">💳</span> Pagamentos
+          <span class="nav-icon"><span data-icon="credit-card"></span></span> Pagamentos
           <span class="nav-badge" id="badge-pendentes">3</span>
         </a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">Conta</span>
         <a class="nav-item" href="#">
-          <span class="nav-icon">⚙</span> Configurações
+          <span class="nav-icon"><span data-icon="settings"></span></span> Configurações
         </a>
         <a class="nav-item" href="../index.html">
-          <span class="nav-icon">↩</span> Início
+          <span class="nav-icon"><span data-icon="arrow-left"></span></span> Início
         </a>
       </div>
     </nav>
@@ -73,7 +74,7 @@
         <span class="page-subtitle" id="today-date"></span>
       </div>
       <div class="topbar-right">
-        <button id="btn-alto-contraste" aria-label="Ativar alto contraste">⊙ Contraste</button>
+        <button id="btn-alto-contraste" aria-label="Ativar alto contraste"><span data-icon="contrast"></span> Contraste</button>
         <a href="agenda.html" class="btn btn-primary btn-sm">+ Nova sessão</a>
       </div>
     </header>
@@ -85,7 +86,7 @@
         <div class="stat-card stat-card-accent">
           <div class="stat-header">
             <span class="stat-label">Alunos Ativos</span>
-            <div class="stat-icon stat-icon-orange">👥</div>
+            <div class="stat-icon stat-icon-orange"><span data-icon="users"></span></div>
           </div>
           <div class="stat-value" id="stat-alunos">—</div>
           <div class="stat-delta up" id="stat-alunos-delta">↑ 2 este mês</div>
@@ -93,7 +94,7 @@
         <div class="stat-card">
           <div class="stat-header">
             <span class="stat-label">Sessões Hoje</span>
-            <div class="stat-icon stat-icon-blue">📅</div>
+            <div class="stat-icon stat-icon-blue"><span data-icon="calendar"></span></div>
           </div>
           <div class="stat-value" id="stat-sessoes">—</div>
           <div class="stat-delta neutral" id="stat-sessoes-delta">de <span id="stat-sessoes-total">0</span> agendadas</div>
@@ -101,7 +102,7 @@
         <div class="stat-card">
           <div class="stat-header">
             <span class="stat-label">Receita no Mês</span>
-            <div class="stat-icon stat-icon-green">💰</div>
+            <div class="stat-icon stat-icon-green"><span data-icon="wallet"></span></div>
           </div>
           <div class="stat-value" id="stat-receita">—</div>
           <div class="stat-delta up" id="stat-receita-delta">↑ vs mês anterior</div>
@@ -109,7 +110,7 @@
         <div class="stat-card">
           <div class="stat-header">
             <span class="stat-label">Pag. Pendentes</span>
-            <div class="stat-icon stat-icon-red">⚠</div>
+            <div class="stat-icon stat-icon-red"><span data-icon="alert"></span></div>
           </div>
           <div class="stat-value" id="stat-pendentes">—</div>
           <div class="stat-delta down" id="stat-pendentes-delta">requer atenção</div>
@@ -122,13 +123,13 @@
         <!-- Agenda de hoje -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">📅 Agenda de Hoje</span>
+            <span class="card-title"><span data-icon="calendar"></span> Agenda de Hoje</span>
             <a href="agenda.html" class="btn btn-ghost btn-sm">Ver tudo →</a>
           </div>
           <div class="card-body">
             <div class="timeline" id="timeline-hoje">
               <div class="empty-state" style="padding:var(--space-8) var(--space-4);">
-                <div class="empty-icon">📭</div>
+                <div class="empty-icon"><span data-icon="inbox"></span></div>
                 <div class="empty-title">Sem sessões hoje</div>
                 <div class="empty-desc">Agende uma nova sessão para seus alunos.</div>
               </div>
@@ -142,13 +143,13 @@
           <!-- Alunos recentes -->
           <div class="card">
             <div class="card-header">
-              <span class="card-title">👥 Alunos Recentes</span>
+              <span class="card-title"><span data-icon="users"></span> Alunos Recentes</span>
               <a href="alunos.html" class="btn btn-ghost btn-sm">Ver todos →</a>
             </div>
             <div class="card-body" style="padding-top:0;">
               <div id="alunos-recentes">
                 <div class="empty-state" style="padding:var(--space-5);">
-                  <div class="empty-icon">👤</div>
+                  <div class="empty-icon"><span data-icon="user"></span></div>
                   <div class="empty-title">Nenhum aluno</div>
                   <div class="empty-desc">Cadastre seu primeiro aluno.</div>
                 </div>
@@ -160,13 +161,13 @@
           <!-- Pagamentos -->
           <div class="card">
             <div class="card-header">
-              <span class="card-title">💳 Pagamentos Pendentes</span>
+              <span class="card-title"><span data-icon="credit-card"></span> Pagamentos Pendentes</span>
               <a href="pagamentos.html" class="btn btn-ghost btn-sm">Ver todos →</a>
             </div>
             <div class="card-body" style="padding-top:0;">
               <div id="pag-pendentes-list">
                 <div class="empty-state" style="padding:var(--space-5);">
-                  <div class="empty-icon">✅</div>
+                  <div class="empty-icon"><span data-icon="check-circle"></span></div>
                   <div class="empty-title">Tudo em dia!</div>
                   <div class="empty-desc">Nenhum pagamento pendente.</div>
                 </div>
@@ -183,6 +184,7 @@
 
 <div class="toast-container" id="toasts"></div>
 
+<script src="../icons.js"></script>
 <script>
   const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
 

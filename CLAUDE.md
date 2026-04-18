@@ -1,5 +1,5 @@
 # CLAUDE.md — farpa Forte
-> Arquivo de contexto automático · rff82/forte-farpa-ai · v1.0 · 2026-04-17
+> Arquivo de contexto automático · rff82/forte-farpa-ai · v1.1 · 2026-04-18
 
 ---
 
@@ -7,7 +7,38 @@
 
 **forte.farpa.ai** é uma plataforma SaaS para personal trainers gerenciarem alunos, agenda, pagamentos e evolução física. Acesso dual: professor e aluno. Parte do ecossistema farpa — construído por Rodrigo.
 
-Acento: `#F97316` (laranja). Tema padrão: escuro.
+**Categoria de mercado:** fitness / personal training SaaS B2B.
+**Concorrentes benchmark:** Trainerize, Hevy, TrueCoach, Strava (consumer), Peloton (consumer premium).
+
+---
+
+## DESIGN SYSTEM — paleta on-trend da categoria
+
+Veredito da pesquisa obrigatória (WGSN A/W 25–26 + Mobbin + Dribbble 2026) registrado em `farpa-reengenharia/02-design-system/05-trend-research.md`:
+
+```
+Primary (superfície):  #0A0B0D  (Woodsmoke / near-black) — dark-first cinematic
+Accent principal:      #F97316  (orange, Strava-like)
+Accent secundário:     #A3E635  (Cyber Lime — WGSN 2026) para PRs/streaks
+Warm light:            #F5F0EB  (Cloud Dancer — quiet luxury, conteúdo editorial)
+Brand mestre farpa:    #4338CA  (índigo) — usar APENAS em gráficos secundários, nunca como primary
+Fonts:                 Plus Jakarta Sans + JetBrains Mono (imutáveis)
+Tema padrão:           Escuro (class="theme-escuro" no body)
+```
+
+**Por que dark + orange:** Peloton (Woodsmoke+Cardinal), Whoop (#0B0B0B+#FF0100) e Hevy consolidaram dark cinematic como padrão fitness atlético. Strava usa International Orange #FC4C02 como assinatura. Índigo genérico de SaaS B2B não carrega energia física.
+
+**Fontes da pesquisa:** [Peloton Mobbin](https://mobbin.com/colors/brand/peloton) · [Strava Mobbin](https://mobbin.com/colors/brand/strava) · [WHOOP Mobbin](https://mobbin.com/colors/brand/whoop) · [WGSN Key Colours 26/27](https://www.wgsn.com/en/blog/key-colours-w-26-27) · [WGSN Colour of the Year 2026 — Transformative Teal](https://mr-mag.com/wgsn-and-coloro-announce-colour-of-the-year-2026-transformative-teal-and-the-key-colours-for-a-w-26-27/).
+
+Ordem de carregamento obrigatória:
+```html
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="themes.css">
+<link rel="stylesheet" href="components.css">
+<link rel="stylesheet" href="logo-system.css">
+<link rel="stylesheet" href="forte.css">
+<script src="icons.js"></script>
+```
 
 ---
 
@@ -17,50 +48,22 @@ Acento: `#F97316` (laranja). Tema padrão: escuro.
 /
 ├── index.html              ← landing page (público)
 ├── login.html              ← login professor/aluno
-├── forte.css               ← CSS específico (laranja + dark) — NÃO sync
+├── forte.css               ← CSS específico (orange + dark) — NÃO sync
 ├── tokens.css              ← design system base (sync com shared/)
 ├── themes.css              ← temas (sync com shared/)
 ├── components.css          ← componentes (sync com shared/)
+├── logo-system.css         ← logo unificado (sync com shared/)
 ├── theme-engine.js         ← switcher de tema (sync com shared/)
+├── icons.js                ← biblioteca SVG line Lucide (sync com shared/)
 ├── schema.sql              ← schema D1 completo
 ├── professor/
-│   ├── dashboard.html
-│   ├── alunos.html
-│   ├── agenda.html
-│   └── pagamentos.html
 ├── aluno/
-│   ├── dashboard.html
-│   └── evolucao.html
 ├── workers/forte-worker/
-│   ├── src/index.ts
-│   ├── wrangler.jsonc
-│   └── package.json
 ├── .github/workflows/ci.yml
 └── CLAUDE.md
 ```
 
-> ⚠️ `tokens.css` / `themes.css` / `theme-engine.js` → copiar de `../shared/` e não editar.
-> `forte.css` é específico do produto — pode e deve ser editado.
-
----
-
-## DESIGN SYSTEM
-
-```
-Primary:  #4338CA  (índigo — ADR 002)
-Accent:   #F97316  (laranja — var(--forte-accent) em forte.css)
-Fonts:    Plus Jakarta Sans + JetBrains Mono (imutáveis)
-Tema:     Escuro por padrão (class="theme-escuro" no body)
-```
-
-Ordem de carregamento obrigatória:
-```html
-<link rel="stylesheet" href="../tokens.css">
-<link rel="stylesheet" href="../themes.css">
-<link rel="stylesheet" href="../components.css">
-<link rel="stylesheet" href="../forte.css">
-<script src="../theme-engine.js"></script>
-```
+> ⚠️ `tokens.css` / `themes.css` / `logo-system.css` / `theme-engine.js` / `icons.js` → copiar de `../shared/` e não editar.
 
 ---
 
@@ -80,14 +83,18 @@ Auth:          OAuth2/OIDC via admin.farpa.ai (IdP centralizado)
 
 ## REGRAS INEGOCIÁVEIS
 
-- **Alto contraste sempre visível** no header — `id="btn-alto-contraste"`
-- **WCAG AA mínimo** — Rodrigo tem baixa visão, é requisito de existência
-- **API keys nunca no cliente** — sempre `wrangler secret put`
-- **Cores nunca hardcoded** — sempre `var(--forte-xxx)` ou `var(--token)`
-- **Tipografia imutável** — Plus Jakarta Sans + JetBrains Mono
-- **Nunca modificar** `tokens.css` / `themes.css` / `theme-engine.js`
-- **Auth** — cookie HttpOnly Secure SameSite=Lax (nunca localStorage para sessão)
-- **Cloudflare Free Tier** — 100k Worker req/dia, D1 5M reads/100k writes
+- **Alto contraste é toggle SECUNDÁRIO**, sempre no header (`#btn-alto-contraste` → `.theme-alto-contraste`). NÃO é o tema padrão. Tema padrão = dark cinematic on-trend (regra mestre do ecossistema).
+- **Paleta on-trend fitness** — dark `#0A0B0D` + accent orange `#F97316`. Nunca índigo como primary aqui.
+- **WCAG AA mínimo** — Rodrigo tem baixa visão, é requisito de existência. Contraste texto ≥ 4.5:1.
+- **API keys nunca no cliente** — sempre `wrangler secret put`.
+- **Cores nunca hardcoded** — sempre `var(--forte-xxx)` ou `var(--token)`.
+- **Tipografia imutável** — Plus Jakarta Sans + JetBrains Mono.
+- **Nunca modificar** arquivos sincronizados de `shared/` neste repo; editar na raiz e re-sincronizar.
+- **Auth cross-site** — cookie de sessão `forte_sid` emitido como `HttpOnly; Secure; SameSite=None; Partitioned; Path=/`. `SameSite=Lax` quebra login (incidente 2026-04-18). Helper `sessionCookie()` + `clearSessionCookie()` em `workers/forte-worker/src/index.ts`.
+- **Logo unificado** — `<div class="farpa-logo">` com `--logo-mark-bg: var(--forte-accent)`. Nunca SVG próprio.
+- **Ícones SVG line (Lucide)** via `<span data-icon="nome"></span>` + `icons.js`. Nunca emojis em UI funcional.
+- **Sem números inventados** em landing — ou puxa de D1, ou não mostra (pitch honesto: Grátis / ~2min / Edge).
+- **Cloudflare Free Tier** — 100k Worker req/dia, D1 5M reads/100k writes.
 
 ---
 
@@ -125,4 +132,13 @@ Editar → commit → push main → CI GitHub Actions → CF Pages + Worker (~2 
 
 ---
 
-*farpa Forte · CLAUDE.md · v1.0 · 2026-04-17*
+## HISTÓRICO DE FALHAS DE CI
+> Registro automático escrito pelo job `record-failure` em `.github/workflows/ci.yml`.
+> Cada entrada abaixo foi uma falha real — consultar antes de repetir mesma operação.
+> Regra mestre: `farpa-reengenharia/06-operacional/09-ci-self-healing.md`.
+
+<!-- Nenhuma falha registrada ainda. Primeiro run quebrado criará a primeira entrada. -->
+
+---
+
+*farpa Forte · CLAUDE.md · v1.1 · 2026-04-18*

@@ -4,27 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>farpa Forte — Gestão para Personal Trainers</title>
+  <meta name="description" content="Agenda, alunos, pagamentos e evolução em uma plataforma moderna para personal trainers.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="themes.css">
   <link rel="stylesheet" href="components.css">
+  <link rel="stylesheet" href="logo-system.css">
   <link rel="stylesheet" href="forte.css">
 </head>
-<body>
+<body style="--logo-mark-bg: var(--forte-accent);">
 
   <!-- Topbar público -->
   <nav style="position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,10,10,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--forte-border);padding:0 var(--space-7);height:64px;display:flex;align-items:center;justify-content:space-between;">
-    <a href="/" style="display:flex;align-items:center;gap:var(--space-3);">
-      <div style="width:34px;height:34px;background:var(--forte-accent);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:var(--text-sm);color:#fff;letter-spacing:-0.5px;">F</div>
-      <span style="font-size:var(--text-lg);font-weight:900;letter-spacing:-0.5px;">forte</span>
-      <span style="font-size:var(--text-xs);color:var(--forte-text-muted);font-family:var(--font-mono);margin-top:1px;">farpa.ai</span>
+    <a href="/" class="farpa-logo">
+      <div class="farpa-logo-mark farpa-logo-mark--sm">F</div>
+      <div class="farpa-logo-text">
+        <span class="farpa-logo-wordmark" style="font-size:var(--text-base);">farpa</span>
+        <span class="farpa-logo-sublabel">forte.farpa.ai</span>
+      </div>
     </a>
     <div style="display:flex;align-items:center;gap:var(--space-4);">
-      <button id="btn-alto-contraste" aria-label="Ativar alto contraste">⊙ Contraste</button>
+      <button id="btn-alto-contraste" aria-label="Ativar alto contraste"><span data-icon="contrast"></span> Contraste</button>
       <a href="login.html" class="btn btn-secondary btn-sm">Entrar</a>
-      <a href="login.html" class="btn btn-primary btn-sm">Começar grátis</a>
+      <a href="login.html?mode=register" class="btn btn-primary btn-sm">Começar grátis</a>
     </div>
   </nav>
 
@@ -32,76 +36,78 @@
   <main style="padding-top:64px;">
     <div class="landing-wrap">
 
-      <span class="landing-eyebrow">🏋️ Para Personal Trainers profissionais</span>
+      <span class="landing-eyebrow"><span data-icon="dumbbell"></span> Para Personal Trainers profissionais</span>
 
       <h1 class="landing-h1">
         Toda a sua<br>academia<br>na <span class="accent">palma da mão</span>
       </h1>
 
       <p class="landing-desc">
-        Gerencie alunos, agenda, pagamentos e evolução em uma plataforma moderna. Feita para quem treina e cobra com profissionalismo.
+        Gerencie alunos, agenda, pagamentos e evolução em uma plataforma moderna.
+        Feita para quem treina e cobra com profissionalismo.
       </p>
 
       <div class="landing-actions">
-        <a href="login.html" class="btn btn-primary btn-lg">
-          🚀 Começar gratuitamente
+        <a href="login.html?mode=register" class="btn btn-primary btn-lg">
+          Começar gratuitamente <span data-icon="arrow-right"></span>
         </a>
         <a href="login.html?role=aluno" class="btn btn-secondary btn-lg">
           Sou aluno
         </a>
       </div>
 
-      <!-- Stats -->
-      <div class="landing-stats-row">
-        <div style="text-align:center;">
-          <div class="lst-value">500+</div>
-          <div class="lst-label">Personal Trainers</div>
-        </div>
-        <div style="text-align:center;">
-          <div class="lst-value">12k</div>
-          <div class="lst-label">Alunos ativos</div>
-        </div>
-        <div style="text-align:center;">
-          <div class="lst-value">98%</div>
-          <div class="lst-label">Satisfação</div>
-        </div>
-        <div style="text-align:center;">
-          <div class="lst-value">R$0</div>
-          <div class="lst-label">Para começar</div>
-        </div>
-      </div>
-
       <!-- Features -->
       <div class="landing-features">
         <div class="feat-card">
-          <span class="feat-icon">📅</span>
+          <span class="feat-icon"><span data-icon="calendar"></span></span>
           <div class="feat-title">Agenda Visual</div>
           <div class="feat-desc">Calendário semanal com arrastar e soltar. Confirme, cancele ou reagende com um clique. Nunca mais perca uma sessão.</div>
         </div>
         <div class="feat-card">
-          <span class="feat-icon">👥</span>
+          <span class="feat-icon"><span data-icon="user"></span></span>
           <div class="feat-title">Ficha Completa do Aluno</div>
           <div class="feat-desc">Anamnese, objetivos, histórico de saúde, medidas corporais e evolução fotográfica — tudo organizado por aluno.</div>
         </div>
         <div class="feat-card">
-          <span class="feat-icon">💳</span>
+          <span class="feat-icon"><span data-icon="credit-card"></span></span>
           <div class="feat-title">Gestão de Pagamentos</div>
           <div class="feat-desc">Controle de mensalidades, alertas de inadimplência e histórico completo. Receba via PIX, dinheiro ou cartão.</div>
         </div>
         <div class="feat-card">
-          <span class="feat-icon">📈</span>
+          <span class="feat-icon"><span data-icon="trending-up"></span></span>
           <div class="feat-title">Evolução Real</div>
           <div class="feat-desc">Gráficos de peso, medidas e % de gordura ao longo do tempo. Mostre resultados concretos para seus alunos.</div>
         </div>
         <div class="feat-card">
-          <span class="feat-icon">🏃</span>
+          <span class="feat-icon"><span data-icon="activity"></span></span>
           <div class="feat-title">Planos de Treino</div>
           <div class="feat-desc">Monte treinos A, B e C com exercícios, séries, repetições e descanso. O aluno acessa no app.</div>
         </div>
         <div class="feat-card">
-          <span class="feat-icon">🤖</span>
+          <span class="feat-icon"><span data-icon="sparkles"></span></span>
           <div class="feat-title">IA como copiloto</div>
           <div class="feat-desc">Sugestão de treinos baseada no perfil do aluno. A IA analisa objetivos e histórico para inspirar suas prescrições.</div>
+        </div>
+      </div>
+
+      <!-- Pricing / proposta honesta (sem stats inventadas) -->
+      <div class="landing-pitch">
+        <div class="landing-pitch-row">
+          <div>
+            <div class="landing-pitch-label">Para começar</div>
+            <div class="landing-pitch-value">Grátis</div>
+            <div class="landing-pitch-sub">Sem cartão de crédito, sem limite de alunos no MVP.</div>
+          </div>
+          <div>
+            <div class="landing-pitch-label">Tempo de setup</div>
+            <div class="landing-pitch-value">~2 min</div>
+            <div class="landing-pitch-sub">Cadastro, primeiro aluno e primeira sessão agendada.</div>
+          </div>
+          <div>
+            <div class="landing-pitch-label">Hospedagem</div>
+            <div class="landing-pitch-value">Edge</div>
+            <div class="landing-pitch-sub">Cloudflare Workers em mais de 300 cidades.</div>
+          </div>
         </div>
       </div>
 
@@ -117,6 +123,7 @@
     </p>
   </footer>
 
+  <script src="icons.js"></script>
   <script>
     const btn = document.getElementById('btn-alto-contraste');
     btn.addEventListener('click', () => {
@@ -124,7 +131,12 @@
       localStorage.setItem('forte-tema', document.body.className);
     });
     const saved = localStorage.getItem('forte-tema');
-    if (saved) document.body.className = saved;
+    if (saved) {
+      document.body.className = saved;
+      if (!document.body.style.cssText.includes('--logo-mark-bg')) {
+        document.body.style.setProperty('--logo-mark-bg', 'var(--forte-accent)');
+      }
+    }
   </script>
 
 </body>

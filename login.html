@@ -10,21 +10,22 @@
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="themes.css">
   <link rel="stylesheet" href="components.css">
+  <link rel="stylesheet" href="logo-system.css">
   <link rel="stylesheet" href="forte.css">
 </head>
-<body>
+<body style="--logo-mark-bg: var(--forte-accent);">
 
 <div class="login-page">
 
   <!-- Esquerda: hero -->
   <div class="login-left">
-    <div class="login-left-logo">
-      <div class="login-logo-mark">F</div>
-      <div>
-        <div class="login-logo-name">forte</div>
-        <div class="login-logo-sub">forte.farpa.ai</div>
+    <a href="/" class="farpa-logo" style="margin-bottom:var(--space-10);">
+      <div class="farpa-logo-mark farpa-logo-mark--lg">F</div>
+      <div class="farpa-logo-text">
+        <span class="farpa-logo-wordmark" style="font-size:var(--text-xl);">farpa</span>
+        <span class="farpa-logo-sublabel">forte.farpa.ai</span>
       </div>
-    </div>
+    </a>
     <h1 class="login-left-title" id="left-title">
       Profissional de verdade<br>usa <span class="accent">ferramenta certa</span>
     </h1>
@@ -32,11 +33,11 @@
       Agenda, alunos, pagamentos e evolução — tudo integrado. Foque no treino, a gestão a gente resolve.
     </p>
     <div class="login-left-features">
-      <div class="login-feat-item"><div class="login-feat-check">✓</div><span>Agenda visual com calendário semanal</span></div>
-      <div class="login-feat-item"><div class="login-feat-check">✓</div><span>Controle de pagamentos e inadimplência</span></div>
-      <div class="login-feat-item"><div class="login-feat-check">✓</div><span>Evolução do aluno com gráficos reais</span></div>
-      <div class="login-feat-item"><div class="login-feat-check">✓</div><span>Planos de treino A/B/C por aluno</span></div>
-      <div class="login-feat-item"><div class="login-feat-check">✓</div><span>IA para sugestão de treinos</span></div>
+      <div class="login-feat-item"><div class="login-feat-check"><span data-icon="check"></span></div><span>Agenda visual com calendário semanal</span></div>
+      <div class="login-feat-item"><div class="login-feat-check"><span data-icon="check"></span></div><span>Controle de pagamentos e inadimplência</span></div>
+      <div class="login-feat-item"><div class="login-feat-check"><span data-icon="check"></span></div><span>Evolução do aluno com gráficos reais</span></div>
+      <div class="login-feat-item"><div class="login-feat-check"><span data-icon="check"></span></div><span>Planos de treino A/B/C por aluno</span></div>
+      <div class="login-feat-item"><div class="login-feat-check"><span data-icon="check"></span></div><span>IA para sugestão de treinos</span></div>
     </div>
   </div>
 
@@ -46,16 +47,16 @@
 
       <!-- Contraste -->
       <div style="position:absolute;top:var(--space-4);right:var(--space-4);">
-        <button id="btn-alto-contraste" aria-label="Ativar alto contraste">⊙ Contraste</button>
+        <button id="btn-alto-contraste" aria-label="Ativar alto contraste"><span data-icon="contrast"></span> Contraste</button>
       </div>
 
       <!-- Tabs: Professor / Aluno -->
       <div class="login-tabs" role="tablist" id="role-tabs">
         <button class="login-tab active" id="tab-professor" role="tab" aria-selected="true" onclick="switchRole('professor')">
-          🏋️ Professor
+          <span data-icon="dumbbell"></span> Professor
         </button>
         <button class="login-tab" id="tab-aluno" role="tab" aria-selected="false" onclick="switchRole('aluno')">
-          👤 Aluno
+          <span data-icon="user"></span> Aluno
         </button>
       </div>
 
@@ -107,7 +108,7 @@
               <label class="form-label" for="pr-senha">Senha * <span style="font-size:var(--text-xs);color:var(--forte-text-muted);">(mín. 8 caracteres)</span></label>
               <div style="position:relative;">
                 <input class="form-input" type="password" id="pr-senha" placeholder="••••••••" required autocomplete="new-password" oninput="checkSenha(this.value)">
-                <button type="button" onclick="toggleSenha('pr-senha',this)" style="position:absolute;right:var(--space-3);top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--forte-text-muted);font-size:var(--text-sm);">👁</button>
+                <button type="button" onclick="toggleSenha('pr-senha',this)" aria-label="Mostrar senha" style="position:absolute;right:var(--space-3);top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--forte-text-muted);display:inline-flex;align-items:center;justify-content:center;padding:0;"><span data-icon="eye"></span></button>
               </div>
               <!-- força da senha -->
               <div style="margin-top:var(--space-2);height:4px;background:var(--forte-border);border-radius:2px;overflow:hidden;">
@@ -151,7 +152,7 @@
       </div>
 
       <p style="text-align:center;margin-top:var(--space-6);font-size:var(--text-sm);">
-        <a href="/" style="color:var(--forte-text-secondary);">← Voltar para o início</a>
+        <a href="/" style="color:var(--forte-text-secondary);display:inline-flex;align-items:center;gap:var(--space-2);"><span data-icon="arrow-left"></span> Voltar para o início</a>
       </p>
 
     </div>
@@ -160,6 +161,7 @@
 
 <div class="toast-container" id="toasts"></div>
 
+<script src="icons.js"></script>
 <script>
   const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
   let currentRole = 'professor';
@@ -288,7 +290,9 @@
   function toggleSenha(id, btn) {
     const inp = document.getElementById(id);
     inp.type  = inp.type === 'password' ? 'text' : 'password';
-    btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+    const next = inp.type === 'password' ? 'eye' : 'eye-off';
+    btn.innerHTML = window.farpaIcon ? window.farpaIcon(next) : '';
+    btn.setAttribute('aria-label', inp.type === 'password' ? 'Mostrar senha' : 'Ocultar senha');
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────

@@ -10,31 +10,32 @@
   <link rel="stylesheet" href="../tokens.css">
   <link rel="stylesheet" href="../themes.css">
   <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../logo-system.css">
   <link rel="stylesheet" href="../forte.css">
 </head>
-<body>
+<body style="--logo-mark-bg: var(--forte-accent);">
 
 <div class="app-shell">
   <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="sidebar-logo-mark">F</div>
-      <div class="sidebar-logo-info">
-        <div class="sidebar-logo-name">forte</div>
-        <div class="sidebar-logo-sub">Professor</div>
+    <a href="dashboard.html" class="farpa-logo" style="padding:var(--space-5);border-bottom:1px solid var(--forte-border);">
+      <div class="farpa-logo-mark farpa-logo-mark--md">F</div>
+      <div class="farpa-logo-text">
+        <span class="farpa-logo-wordmark">farpa</span>
+        <span class="farpa-logo-sublabel">Professor</span>
       </div>
-    </div>
+    </a>
     <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-label">Principal</span>
-        <a class="nav-item" href="dashboard.html"><span class="nav-icon">⊞</span> Dashboard</a>
-        <a class="nav-item" href="agenda.html"><span class="nav-icon">📅</span> Agenda</a>
-        <a class="nav-item" href="alunos.html"><span class="nav-icon">👥</span> Alunos</a>
-        <a class="nav-item active" href="pagamentos.html"><span class="nav-icon">💳</span> Pagamentos</a>
+        <a class="nav-item" href="dashboard.html"><span class="nav-icon"><span data-icon="grid"></span></span> Dashboard</a>
+        <a class="nav-item" href="agenda.html"><span class="nav-icon"><span data-icon="calendar"></span></span> Agenda</a>
+        <a class="nav-item" href="alunos.html"><span class="nav-icon"><span data-icon="users"></span></span> Alunos</a>
+        <a class="nav-item active" href="pagamentos.html"><span class="nav-icon"><span data-icon="credit-card"></span></span> Pagamentos</a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">Conta</span>
-        <a class="nav-item" href="#"><span class="nav-icon">⚙</span> Configurações</a>
-        <a class="nav-item" href="../index.html"><span class="nav-icon">↩</span> Início</a>
+        <a class="nav-item" href="#"><span class="nav-icon"><span data-icon="settings"></span></span> Configurações</a>
+        <a class="nav-item" href="../index.html"><span class="nav-icon"><span data-icon="arrow-left"></span></span> Início</a>
       </div>
     </nav>
     <div class="sidebar-footer">
@@ -57,7 +58,7 @@
       <div class="topbar-right">
         <select class="form-input" id="filtro-mes" onchange="loadPagamentos()" style="width:auto;font-size:var(--text-sm);min-width:160px;">
         </select>
-        <button id="btn-alto-contraste" aria-label="Ativar alto contraste">⊙ Contraste</button>
+        <button id="btn-alto-contraste" aria-label="Ativar alto contraste"><span data-icon="contrast"></span> Contraste</button>
         <button class="btn btn-primary btn-sm" onclick="openModal()">+ Nova Cobrança</button>
       </div>
     </header>
@@ -67,17 +68,17 @@
       <!-- Resumo mensal -->
       <div class="payment-summary">
         <div class="psummary-card paid">
-          <div class="psummary-label">💚 Recebido</div>
+          <div class="psummary-label"><span data-icon="check-circle"></span> Recebido</div>
           <div class="psummary-value paid-color" id="total-pago">R$ —</div>
           <div class="psummary-sub" id="count-pago">— alunos em dia</div>
         </div>
         <div class="psummary-card pending">
-          <div class="psummary-label">🟡 Pendente</div>
+          <div class="psummary-label"><span data-icon="clock"></span> Pendente</div>
           <div class="psummary-value pending-color" id="total-pendente">R$ —</div>
           <div class="psummary-sub" id="count-pendente">— aguardando pagamento</div>
         </div>
         <div class="psummary-card overdue">
-          <div class="psummary-label">🔴 Atrasado</div>
+          <div class="psummary-label"><span data-icon="alert"></span> Atrasado</div>
           <div class="psummary-value overdue-color" id="total-atrasado">R$ —</div>
           <div class="psummary-sub" id="count-atrasado">— requer atenção</div>
         </div>
@@ -99,7 +100,7 @@
       <!-- Filtros + tabela -->
       <div style="display:flex;gap:var(--space-4);margin-bottom:var(--space-4);flex-wrap:wrap;align-items:center;">
         <div class="search-wrap" style="flex:1;min-width:200px;">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon"><span data-icon="search"></span></span>
           <input class="form-input" type="search" id="search-pag" placeholder="Buscar aluno..." oninput="filterPagamentos()">
         </div>
         <select class="form-input" id="filter-status-pag" style="width:auto;min-width:140px;" onchange="filterPagamentos()">
@@ -125,7 +126,7 @@
               </tr>
             </thead>
             <tbody id="tbody-pag">
-              <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-title">Carregando...</div></div></td></tr>
+              <tr><td colspan="7"><div class="empty-state"><div class="empty-icon"><span data-icon="loader"></span></div><div class="empty-title">Carregando...</div></div></td></tr>
             </tbody>
           </table>
         </div>
@@ -140,7 +141,7 @@
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title">Nova Cobrança</span>
-      <button class="btn btn-ghost btn-icon" onclick="closeModal()" aria-label="Fechar">✕</button>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal()" aria-label="Fechar"><span data-icon="x"></span></button>
     </div>
     <div class="modal-body">
       <form id="form-pag" onsubmit="savePagamento(event)">
@@ -190,6 +191,7 @@
 
 <div class="toast-container" id="toasts"></div>
 
+<script src="../icons.js"></script>
 <script>
   const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
   let todosPagamentos = [];
@@ -266,7 +268,7 @@
   function renderTabela(pags) {
     const tbody = document.getElementById('tbody-pag');
     if (!pags.length) {
-      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">💳</div><div class="empty-title">Nenhum pagamento encontrado</div></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon"><span data-icon="credit-card"></span></div><div class="empty-title">Nenhum pagamento encontrado</div></div></td></tr>`;
       return;
     }
     tbody.innerHTML = pags.map(p => `

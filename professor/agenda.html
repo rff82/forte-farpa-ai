@@ -10,31 +10,32 @@
   <link rel="stylesheet" href="../tokens.css">
   <link rel="stylesheet" href="../themes.css">
   <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../logo-system.css">
   <link rel="stylesheet" href="../forte.css">
 </head>
-<body>
+<body style="--logo-mark-bg: var(--forte-accent);">
 
 <div class="app-shell">
   <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="sidebar-logo-mark">F</div>
-      <div class="sidebar-logo-info">
-        <div class="sidebar-logo-name">forte</div>
-        <div class="sidebar-logo-sub">Professor</div>
+    <a href="dashboard.html" class="farpa-logo" style="padding:var(--space-5);border-bottom:1px solid var(--forte-border);">
+      <div class="farpa-logo-mark farpa-logo-mark--md">F</div>
+      <div class="farpa-logo-text">
+        <span class="farpa-logo-wordmark">farpa</span>
+        <span class="farpa-logo-sublabel">Professor</span>
       </div>
-    </div>
+    </a>
     <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-label">Principal</span>
-        <a class="nav-item" href="dashboard.html"><span class="nav-icon">⊞</span> Dashboard</a>
-        <a class="nav-item active" href="agenda.html"><span class="nav-icon">📅</span> Agenda</a>
-        <a class="nav-item" href="alunos.html"><span class="nav-icon">👥</span> Alunos</a>
-        <a class="nav-item" href="pagamentos.html"><span class="nav-icon">💳</span> Pagamentos</a>
+        <a class="nav-item" href="dashboard.html"><span class="nav-icon"><span data-icon="grid"></span></span> Dashboard</a>
+        <a class="nav-item active" href="agenda.html"><span class="nav-icon"><span data-icon="calendar"></span></span> Agenda</a>
+        <a class="nav-item" href="alunos.html"><span class="nav-icon"><span data-icon="users"></span></span> Alunos</a>
+        <a class="nav-item" href="pagamentos.html"><span class="nav-icon"><span data-icon="credit-card"></span></span> Pagamentos</a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">Conta</span>
-        <a class="nav-item" href="#"><span class="nav-icon">⚙</span> Configurações</a>
-        <a class="nav-item" href="../index.html"><span class="nav-icon">↩</span> Início</a>
+        <a class="nav-item" href="#"><span class="nav-icon"><span data-icon="settings"></span></span> Configurações</a>
+        <a class="nav-item" href="../index.html"><span class="nav-icon"><span data-icon="arrow-left"></span></span> Início</a>
       </div>
     </nav>
     <div class="sidebar-footer">
@@ -58,7 +59,7 @@
         <button class="btn btn-secondary btn-icon" onclick="prevWeek()" aria-label="Semana anterior">←</button>
         <button class="btn btn-ghost btn-sm" onclick="goToday()">Hoje</button>
         <button class="btn btn-secondary btn-icon" onclick="nextWeek()" aria-label="Próxima semana">→</button>
-        <button id="btn-alto-contraste" aria-label="Ativar alto contraste">⊙ Contraste</button>
+        <button id="btn-alto-contraste" aria-label="Ativar alto contraste"><span data-icon="contrast"></span> Contraste</button>
         <button class="btn btn-primary btn-sm" onclick="openModal()">+ Nova Sessão</button>
       </div>
     </header>
@@ -93,17 +94,17 @@
       <!-- Total da semana -->
       <div style="display:flex;gap:var(--space-4);margin-top:var(--space-5);flex-wrap:wrap;">
         <div class="stat-card" style="flex:1;min-width:140px;">
-          <div class="stat-header"><span class="stat-label">Esta semana</span><div class="stat-icon stat-icon-orange">📅</div></div>
+          <div class="stat-header"><span class="stat-label">Esta semana</span><div class="stat-icon stat-icon-orange"><span data-icon="calendar"></span></div></div>
           <div class="stat-value" id="total-week">—</div>
           <div class="stat-delta neutral">sessões agendadas</div>
         </div>
         <div class="stat-card" style="flex:1;min-width:140px;">
-          <div class="stat-header"><span class="stat-label">Realizadas</span><div class="stat-icon stat-icon-green">✓</div></div>
+          <div class="stat-header"><span class="stat-label">Realizadas</span><div class="stat-icon stat-icon-green"><span data-icon="check"></span></div></div>
           <div class="stat-value" id="total-done">—</div>
           <div class="stat-delta up">nesta semana</div>
         </div>
         <div class="stat-card" style="flex:1;min-width:140px;">
-          <div class="stat-header"><span class="stat-label">Canceladas</span><div class="stat-icon stat-icon-red">✕</div></div>
+          <div class="stat-header"><span class="stat-label">Canceladas</span><div class="stat-icon stat-icon-red"><span data-icon="x"></span></div></div>
           <div class="stat-value" id="total-cancel">—</div>
           <div class="stat-delta neutral">nesta semana</div>
         </div>
@@ -118,7 +119,7 @@
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title">Nova Sessão</span>
-      <button class="btn btn-ghost btn-icon" onclick="closeModal()" aria-label="Fechar">✕</button>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal()" aria-label="Fechar"><span data-icon="x"></span></button>
     </div>
     <div class="modal-body">
       <form id="form-sessao" onsubmit="saveSessao(event)">
@@ -162,6 +163,7 @@
 
 <div class="toast-container" id="toasts"></div>
 
+<script src="../icons.js"></script>
 <script>
   const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
   const DAYS   = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];

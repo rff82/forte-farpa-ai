@@ -932,9 +932,62 @@ select.form-input {
   transition: border-color var(--transition-base), transform var(--transition-base);
 }
 .feat-card:hover { border-color: var(--forte-border-accent); transform: translateY(-3px); }
-.feat-icon { font-size: 2rem; margin-bottom: var(--space-4); display: block; }
+.feat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px; height: 44px;
+  border-radius: var(--radius-lg);
+  background: rgba(249,115,22,0.12);
+  color: var(--forte-accent);
+  font-size: 1.35rem;
+  margin-bottom: var(--space-4);
+}
 .feat-title { font-size: var(--text-base); font-weight: 800; margin-bottom: var(--space-2); }
 .feat-desc  { font-size: var(--text-sm); color: var(--forte-text-secondary); line-height: 1.6; }
+
+/* ── Pitch honesto (sem stats inventadas) ── */
+.landing-pitch {
+  width: 100%;
+  max-width: 980px;
+  margin: var(--space-10) auto 0;
+  padding: var(--space-7);
+  background: var(--forte-surface);
+  border: 1px solid var(--forte-border);
+  border-radius: var(--radius-xl);
+  position: relative;
+}
+.landing-pitch-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-7);
+  text-align: left;
+}
+.landing-pitch-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--forte-text-muted);
+  margin-bottom: var(--space-2);
+}
+.landing-pitch-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-3xl);
+  font-weight: 900;
+  color: var(--forte-accent);
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: var(--space-2);
+}
+.landing-pitch-sub {
+  font-size: var(--text-sm);
+  color: var(--forte-text-secondary);
+  line-height: 1.5;
+}
+@media (max-width: 720px) {
+  .landing-pitch-row { grid-template-columns: 1fr; gap: var(--space-5); }
+}
 
 /* ── Login Page ── */
 .login-page { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }

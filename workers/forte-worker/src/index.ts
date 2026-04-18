@@ -1,7 +1,8 @@
-// forte-worker · src/index.ts · v1.1 · 2026-04-18
+// forte-worker · src/index.ts · v1.2 · 2026-04-18
 // farpa Forte — Personal Trainer Management API
 // Cloudflare Workers · D1 + KV + AI · OAuth via admin.farpa.ai
 // v1.1: PBKDF2 password hashing, registro de professor, seed endpoint
+// v1.2: fix cross-site cookie — SameSite=None; Secure; Partitioned (regra master ecossistema)
 
 export interface Env {
   DB:    D1Database;
@@ -96,7 +97,31 @@ async function requireSession(request: Request, env: Env): Promise<{ user_id: st
 }
 
 function sessionCookie(sid: string, maxAge = 86400): string {
-  return [`forte_sid=${sid}`, 'Path=/', 'HttpOnly', 'Secure', 'SameSite=Lax', `Max-Age=${maxAge}`].join('; ');
+  // Cross-site cookie: Pages (forte.farpa.ai) e Worker (*.workers.dev) estão em
+  // origens distintas. SameSite=Lax faria o browser não enviar o cookie em
+  // fetch com credentials:'include'. Partitioned (CHIPS) prepara para o default
+  // de cookie partitioning do Chrome. Ver farpa-reengenharia/03-arquitetura/02.
+  return [
+    `forte_sid=${sid}`,
+    'Path=/',
+    'HttpOnly',
+    'Secure',
+    'SameSite=None',
+    'Partitioned',
+    `Max-Age=${maxAge}`,
+  ].join('; ');
+}
+
+function clearSessionCookie(): string {
+  return [
+    'forte_sid=',
+    'Path=/',
+    'HttpOnly',
+    'Secure',
+    'SameSite=None',
+    'Partitioned',
+    'Max-Age=0',
+  ].join('; ');
 }
 
 // ── Helpers D1 ────────────────────────────────────────────────────────────────
@@ -194,7 +219,7 @@ export default {
         if (sid) await env.CACHE.delete(`session:${sid}`);
         return new Response(JSON.stringify({ ok:true }), {
           status: 200,
-          headers: { 'Content-Type':'application/json', 'Set-Cookie': 'forte_sid=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0', ...cors }
+          headers: { 'Content-Type':'application/json', 'Set-Cookie': clearSessionCookie(), ...cors }
         });
       }
 

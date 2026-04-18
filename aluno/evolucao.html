@@ -10,31 +10,32 @@
   <link rel="stylesheet" href="../tokens.css">
   <link rel="stylesheet" href="../themes.css">
   <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../logo-system.css">
   <link rel="stylesheet" href="../forte.css">
 </head>
-<body>
+<body style="--logo-mark-bg: var(--forte-accent);">
 
 <div class="app-shell">
   <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="sidebar-logo-mark">F</div>
-      <div class="sidebar-logo-info">
-        <div class="sidebar-logo-name">forte</div>
-        <div class="sidebar-logo-sub">Meu painel</div>
+    <a href="dashboard.html" class="farpa-logo" style="padding:var(--space-5);border-bottom:1px solid var(--forte-border);">
+      <div class="farpa-logo-mark farpa-logo-mark--md">F</div>
+      <div class="farpa-logo-text">
+        <span class="farpa-logo-wordmark">farpa</span>
+        <span class="farpa-logo-sublabel">Aluno</span>
       </div>
-    </div>
+    </a>
     <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-label">Minha área</span>
-        <a class="nav-item" href="dashboard.html"><span class="nav-icon">⊞</span> Início</a>
-        <a class="nav-item" href="#"><span class="nav-icon">📅</span> Minha Agenda</a>
-        <a class="nav-item active" href="evolucao.html"><span class="nav-icon">📈</span> Evolução</a>
-        <a class="nav-item" href="#"><span class="nav-icon">💳</span> Pagamentos</a>
-        <a class="nav-item" href="#"><span class="nav-icon">🏋️</span> Meu Treino</a>
+        <a class="nav-item" href="dashboard.html"><span class="nav-icon"><span data-icon="grid"></span></span> Início</a>
+        <a class="nav-item" href="#"><span class="nav-icon"><span data-icon="calendar"></span></span> Minha Agenda</a>
+        <a class="nav-item active" href="evolucao.html"><span class="nav-icon"><span data-icon="trending-up"></span></span> Evolução</a>
+        <a class="nav-item" href="#"><span class="nav-icon"><span data-icon="credit-card"></span></span> Pagamentos</a>
+        <a class="nav-item" href="#"><span class="nav-icon"><span data-icon="dumbbell"></span></span> Meu Treino</a>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">Conta</span>
-        <a class="nav-item" href="../login.html"><span class="nav-icon">↩</span> Sair</a>
+        <a class="nav-item" href="../login.html"><span class="nav-icon"><span data-icon="log-out"></span></span> Sair</a>
       </div>
     </nav>
     <div class="sidebar-footer">
@@ -60,7 +61,7 @@
           <option value="6">Últimos 6 meses</option>
           <option value="12">Último ano</option>
         </select>
-        <button id="btn-alto-contraste" aria-label="Ativar alto contraste">⊙ Contraste</button>
+        <button id="btn-alto-contraste" aria-label="Ativar alto contraste"><span data-icon="contrast"></span> Contraste</button>
         <button class="btn btn-primary btn-sm" onclick="openModal()">+ Nova Medição</button>
       </div>
     </header>
@@ -107,7 +108,7 @@
         <!-- Gráfico de peso -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">⚖ Peso (kg)</span>
+            <span class="card-title"><span data-icon="activity"></span> Peso (kg)</span>
             <span style="font-size:var(--text-xs);color:var(--forte-text-muted);font-family:var(--font-mono);" id="peso-range"></span>
           </div>
           <div class="card-body">
@@ -129,7 +130,7 @@
         <!-- Gráfico de % gordura -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">🔥 % Gordura Corporal</span>
+            <span class="card-title"><span data-icon="trending-up"></span> % Gordura Corporal</span>
             <span style="font-size:var(--text-xs);color:var(--forte-text-muted);font-family:var(--font-mono);" id="gordura-range"></span>
           </div>
           <div class="card-body">
@@ -152,7 +153,7 @@
       <!-- Histórico de medições -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">📋 Histórico de Medições</span>
+          <span class="card-title"><span data-icon="inbox"></span> Histórico de Medições</span>
         </div>
         <div class="card-body-flush">
           <table class="forte-table" id="tabela-medicoes">
@@ -170,7 +171,7 @@
               </tr>
             </thead>
             <tbody id="tbody-medicoes">
-              <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-title">Carregando...</div></div></td></tr>
+              <tr><td colspan="9"><div class="empty-state"><div class="empty-icon"><span data-icon="loader"></span></div><div class="empty-title">Carregando...</div></div></td></tr>
             </tbody>
           </table>
         </div>
@@ -185,7 +186,7 @@
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title">Nova Medição</span>
-      <button class="btn btn-ghost btn-icon" onclick="closeModal()" aria-label="Fechar">✕</button>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal()" aria-label="Fechar"><span data-icon="x"></span></button>
     </div>
     <div class="modal-body">
       <form id="form-medicao" onsubmit="saveMedicao(event)">
@@ -250,6 +251,7 @@
 
 <div class="toast-container" id="toasts"></div>
 
+<script src="../icons.js"></script>
 <script>
   const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
 
@@ -276,7 +278,7 @@
   function renderTabela(m) {
     const tbody = document.getElementById('tbody-medicoes');
     if (!m.length) {
-      tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📏</div><div class="empty-title">Sem medições ainda</div><div class="empty-desc">Registre sua primeira medição!</div></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon"><span data-icon="inbox"></span></div><div class="empty-title">Sem medições ainda</div><div class="empty-desc">Registre sua primeira medição!</div></div></td></tr>`;
       return;
     }
     tbody.innerHTML = [...m].reverse().map(r => `
