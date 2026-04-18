@@ -45,6 +45,12 @@
         </a>
       </div>
       <div class="nav-section">
+        <span class="nav-section-label">Inteligência Artificial</span>
+        <a class="nav-item" href="#" onclick="openIAPlanModal();return false;"><span class="nav-icon"><span data-icon="dumbbell"></span></span> Gerar plano</a>
+        <a class="nav-item" href="#" onclick="openIAAnalyzeModal();return false;"><span class="nav-icon"><span data-icon="trending-up"></span></span> Analisar aluno</a>
+        <a class="nav-item" href="#" onclick="openIAMessageModal();return false;"><span class="nav-icon"><span data-icon="message-circle"></span></span> Rascunho cobrança</a>
+      </div>
+      <div class="nav-section">
         <span class="nav-section-label">Conta</span>
         <a class="nav-item" href="#">
           <span class="nav-icon"><span data-icon="settings"></span></span> Configurações
@@ -117,6 +123,28 @@
         </div>
       </div>
 
+      <!-- IA Copilot -->
+      <div class="card" style="margin-bottom:var(--space-5);border:1px solid rgba(249,115,22,0.3);">
+        <div class="card-header" style="background:rgba(249,115,22,0.06);border-bottom:1px solid rgba(249,115,22,0.15);">
+          <span class="card-title" style="color:var(--forte-accent);"><span data-icon="sparkles"></span> IA Copiloto — Assistente do Professor</span>
+          <span class="badge badge-orange">Beta</span>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--space-3);margin-bottom:var(--space-4);">
+            <button class="btn btn-secondary" onclick="openIAPlanModal()"><span data-icon="dumbbell"></span> Gerar plano de treino</button>
+            <button class="btn btn-secondary" onclick="openIAAnalyzeModal()"><span data-icon="trending-up"></span> Analisar evolução</button>
+            <button class="btn btn-secondary" onclick="openIAMessageModal()"><span data-icon="message-circle"></span> Rascunho de cobrança</button>
+          </div>
+          <div id="ia-output" style="display:none;background:var(--forte-surface);border:1px solid var(--forte-border);border-radius:var(--radius-lg);padding:var(--space-4);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-3);">
+              <div style="font-size:var(--text-xs);font-weight:700;color:var(--forte-accent);text-transform:uppercase;letter-spacing:0.06em;" id="ia-output-title">Resultado</div>
+              <button onclick="copyIAOutput()" class="btn btn-ghost btn-sm"><span data-icon="copy"></span> Copiar</button>
+            </div>
+            <div id="ia-output-text" style="font-size:var(--text-sm);color:var(--forte-text-secondary);line-height:1.7;white-space:pre-wrap;max-height:300px;overflow-y:auto;"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Grid principal -->
       <div class="dashboard-grid">
 
@@ -178,6 +206,100 @@
         </div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- Modal: IA — Gerar plano de treino -->
+<div class="modal-overlay" id="modal-ia-plan">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <span class="modal-title"><span data-icon="dumbbell"></span> Gerar plano de treino com IA</span>
+      <button class="btn btn-ghost btn-icon" onclick="document.getElementById('modal-ia-plan').classList.remove('open')" aria-label="Fechar"><span data-icon="x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="ia-plan-nome">Nome do aluno</label>
+        <input class="form-input" type="text" id="ia-plan-nome" placeholder="Ex: Ana Lima">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="ia-plan-objetivo">Objetivo</label>
+        <input class="form-input" type="text" id="ia-plan-objetivo" placeholder="Ex: Emagrecimento e definição">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="ia-plan-sessoes">Sessões por semana</label>
+        <select class="form-input" id="ia-plan-sessoes">
+          <option value="2">2x por semana</option>
+          <option value="3" selected>3x por semana</option>
+          <option value="4">4x por semana</option>
+          <option value="5">5x por semana</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="ia-plan-restricoes">Restrições / lesões</label>
+        <textarea class="form-input" id="ia-plan-restricoes" rows="2" placeholder="Ex: Hérnia L4-L5, joelho direito..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="document.getElementById('modal-ia-plan').classList.remove('open')">Cancelar</button>
+      <button class="btn btn-primary" onclick="runGeneratePlan()" id="btn-ia-plan">Gerar com IA</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: IA — Analisar evolução -->
+<div class="modal-overlay" id="modal-ia-analyze">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <span class="modal-title"><span data-icon="trending-up"></span> Analisar evolução do aluno</span>
+      <button class="btn btn-ghost btn-icon" onclick="document.getElementById('modal-ia-analyze').classList.remove('open')" aria-label="Fechar"><span data-icon="x"></span></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:var(--text-sm);color:var(--forte-text-secondary);margin-bottom:var(--space-4);">Cole as medições do aluno (cada linha: data, peso, % gordura) e a IA fará uma análise completa com recomendações.</p>
+      <div class="form-group">
+        <label class="form-label" for="ia-analyze-nome">Nome do aluno</label>
+        <input class="form-input" type="text" id="ia-analyze-nome" placeholder="Ex: Carlos Mendes">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="ia-analyze-objetivo">Objetivo</label>
+        <input class="form-input" type="text" id="ia-analyze-objetivo" placeholder="Ex: Ganho de massa">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="ia-analyze-medicoes">Medições (uma por linha: peso e gordura)</label>
+        <textarea class="form-input" id="ia-analyze-medicoes" rows="4" placeholder="Ex:&#10;jan/26: 80kg, 20%&#10;fev/26: 78kg, 18%&#10;mar/26: 77kg, 17%"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="document.getElementById('modal-ia-analyze').classList.remove('open')">Cancelar</button>
+      <button class="btn btn-primary" onclick="runAnalyzeStudent()" id="btn-ia-analyze">Analisar com IA</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: IA — Rascunho de cobrança -->
+<div class="modal-overlay" id="modal-ia-message">
+  <div class="modal" style="max-width:440px;">
+    <div class="modal-header">
+      <span class="modal-title"><span data-icon="message-circle"></span> Rascunho de cobrança</span>
+      <button class="btn btn-ghost btn-icon" onclick="document.getElementById('modal-ia-message').classList.remove('open')" aria-label="Fechar"><span data-icon="x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="ia-msg-aluno">Nome do aluno</label>
+        <input class="form-input" type="text" id="ia-msg-aluno" placeholder="Ex: Juliana Santos">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="ia-msg-valor">Valor (R$)</label>
+        <input class="form-input" type="number" id="ia-msg-valor" placeholder="350.00" step="0.01">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="ia-msg-dias">Dias em atraso</label>
+        <input class="form-input" type="number" id="ia-msg-dias" placeholder="5" min="0">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="document.getElementById('modal-ia-message').classList.remove('open')">Cancelar</button>
+      <button class="btn btn-primary" onclick="runDraftMessage()" id="btn-ia-message">Gerar mensagem</button>
     </div>
   </div>
 </div>
@@ -313,6 +435,117 @@
 
   function initials(name) {
     return name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+  }
+
+  // ── IA: helpers ───────────────────────────────────────────────────────────
+  function showIAOutput(title, text) {
+    document.getElementById('ia-output-title').textContent = title;
+    document.getElementById('ia-output-text').textContent = text;
+    document.getElementById('ia-output').style.display = '';
+    document.getElementById('ia-output').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function copyIAOutput() {
+    const text = document.getElementById('ia-output-text').textContent;
+    navigator.clipboard.writeText(text).then(() => toast('Copiado!', 'success'));
+  }
+
+  function setIABtnLoading(btnId, loading) {
+    const btn = document.getElementById(btnId);
+    if (loading) { btn.disabled = true; btn.textContent = 'Gerando...'; }
+    else { btn.disabled = false; }
+  }
+
+  // ── IA: Gerar plano ───────────────────────────────────────────────────────
+  function openIAPlanModal() {
+    document.getElementById('modal-ia-plan').classList.add('open');
+  }
+
+  async function runGeneratePlan() {
+    const nome      = document.getElementById('ia-plan-nome').value.trim();
+    const objetivo  = document.getElementById('ia-plan-objetivo').value.trim();
+    const sessoes   = parseInt(document.getElementById('ia-plan-sessoes').value);
+    const restricoes = document.getElementById('ia-plan-restricoes').value.trim();
+    if (!nome || !objetivo) { toast('Preencha nome e objetivo.', 'error'); return; }
+    setIABtnLoading('btn-ia-plan', true);
+    try {
+      const res = await fetch(`${WORKER}/ai/professor/generate-plan`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_name: nome, objective: objetivo, sessions_per_week: sessoes, restrictions: restricoes })
+      });
+      const d = await res.json().catch(() => ({}));
+      document.getElementById('modal-ia-plan').classList.remove('open');
+      showIAOutput(`Plano gerado para ${nome}`, d.plan || 'Sem resultado.');
+    } catch { toast('Erro ao consultar IA.', 'error'); }
+    finally { document.getElementById('btn-ia-plan').disabled = false; document.getElementById('btn-ia-plan').textContent = 'Gerar com IA'; }
+  }
+
+  // ── IA: Analisar evolução ─────────────────────────────────────────────────
+  function openIAAnalyzeModal() {
+    document.getElementById('modal-ia-analyze').classList.add('open');
+  }
+
+  async function runAnalyzeStudent() {
+    const nome      = document.getElementById('ia-analyze-nome').value.trim();
+    const objetivo  = document.getElementById('ia-analyze-objetivo').value.trim();
+    const medicoes  = document.getElementById('ia-analyze-medicoes').value.trim();
+    if (!nome || !medicoes) { toast('Preencha nome e medições.', 'error'); return; }
+    // Converte texto livre em array de objetos simples para o backend
+    const lines = medicoes.split('\n').filter(l => l.trim());
+    const measurements = lines.map((l, i) => {
+      const weightMatch = l.match(/(\d+(?:[.,]\d+)?)\s*kg/i);
+      const fatMatch    = l.match(/(\d+(?:[.,]\d+)?)\s*%/i);
+      return {
+        measured_at: Math.floor(Date.now()/1000) - (lines.length - i) * 2592000,
+        weight_kg:   weightMatch ? parseFloat(weightMatch[1].replace(',', '.')) : undefined,
+        body_fat_pct: fatMatch   ? parseFloat(fatMatch[1].replace(',', '.'))   : undefined,
+      };
+    });
+    setIABtnLoading('btn-ia-analyze', true);
+    try {
+      const res = await fetch(`${WORKER}/ai/professor/analyze-student`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_name: nome, objective: objetivo, measurements })
+      });
+      const d = await res.json().catch(() => ({}));
+      document.getElementById('modal-ia-analyze').classList.remove('open');
+      showIAOutput(`Análise de ${nome}`, d.analysis || 'Sem resultado.');
+    } catch { toast('Erro ao consultar IA.', 'error'); }
+    finally { document.getElementById('btn-ia-analyze').disabled = false; document.getElementById('btn-ia-analyze').textContent = 'Analisar com IA'; }
+  }
+
+  // ── IA: Rascunho cobrança ─────────────────────────────────────────────────
+  function openIAMessageModal() {
+    document.getElementById('modal-ia-message').classList.add('open');
+  }
+
+  async function runDraftMessage() {
+    const aluno = document.getElementById('ia-msg-aluno').value.trim();
+    const valor = parseFloat(document.getElementById('ia-msg-valor').value);
+    const dias  = parseInt(document.getElementById('ia-msg-dias').value) || 0;
+    if (!aluno || !valor) { toast('Preencha nome e valor.', 'error'); return; }
+    setIABtnLoading('btn-ia-message', true);
+    try {
+      const res = await fetch(`${WORKER}/ai/professor/draft-message`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_name: aluno, amount: valor, days_overdue: dias, professor_name: document.getElementById('sidebar-name').textContent })
+      });
+      const d = await res.json().catch(() => ({}));
+      document.getElementById('modal-ia-message').classList.remove('open');
+      showIAOutput('Mensagem de cobrança', d.message || 'Sem resultado.');
+    } catch { toast('Erro ao consultar IA.', 'error'); }
+    finally { document.getElementById('btn-ia-message').disabled = false; document.getElementById('btn-ia-message').textContent = 'Gerar mensagem'; }
+  }
+
+  function toast(msg, type = 'success') {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.textContent = msg;
+    document.getElementById('toasts').appendChild(el);
+    setTimeout(() => el.remove(), 4500);
   }
 
   loadDashboard();

@@ -2,16 +2,20 @@
 -- Personal Trainer Management Platform
 
 CREATE TABLE IF NOT EXISTS users (
-  id            TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(8)))),
-  email         TEXT UNIQUE NOT NULL,
-  name          TEXT NOT NULL,
-  role          TEXT NOT NULL CHECK(role IN ('professor', 'aluno')),
-  phone         TEXT,
-  avatar_url    TEXT,
-  password_hash TEXT,
-  created_at    INTEGER DEFAULT (unixepoch()),
-  updated_at    INTEGER DEFAULT (unixepoch())
+  id                   TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(8)))),
+  email                TEXT UNIQUE NOT NULL,
+  name                 TEXT NOT NULL,
+  role                 TEXT NOT NULL CHECK(role IN ('professor', 'aluno')),
+  phone                TEXT,
+  avatar_url           TEXT,
+  password_hash        TEXT,
+  must_change_password INTEGER DEFAULT 0,
+  created_at           INTEGER DEFAULT (unixepoch()),
+  updated_at           INTEGER DEFAULT (unixepoch())
 );
+
+-- Migração para DBs existentes (ignorar se coluna já existir)
+-- ALTER TABLE users ADD COLUMN must_change_password INTEGER DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS professor_profiles (
   id              TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(8)))),

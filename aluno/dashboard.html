@@ -31,6 +31,7 @@
         <a class="nav-item active" href="dashboard.html"><span class="nav-icon"><span data-icon="grid"></span></span> Início</a>
         <a class="nav-item" href="#agenda"><span class="nav-icon"><span data-icon="calendar"></span></span> Minha Agenda</a>
         <a class="nav-item" href="evolucao.html"><span class="nav-icon"><span data-icon="trending-up"></span></span> Evolução</a>
+        <a class="nav-item" href="#" onclick="openInsightsModal();return false;"><span class="nav-icon"><span data-icon="sparkles"></span></span> IA — Insights</a>
         <a class="nav-item" href="#pagamentos"><span class="nav-icon"><span data-icon="credit-card"></span></span> Pagamentos</a>
         <a class="nav-item" href="#treino"><span class="nav-icon"><span data-icon="dumbbell"></span></span> Meu Treino</a>
       </div>
@@ -140,8 +141,8 @@
             </div>
 
             <div style="margin-top:var(--space-5);padding-top:var(--space-4);border-top:1px solid var(--forte-border);">
-              <button class="btn btn-primary btn-block" onclick="toast('IA Treino em breve! 🤖','success')">
-                <span data-icon="sparkles"></span> Sugestão de treino com IA
+              <button class="btn btn-primary btn-block" onclick="openIAModal()" id="btn-ia-treino">
+                <span data-icon="sparkles"></span> Adaptar treino com IA
               </button>
             </div>
 
@@ -162,6 +163,84 @@
           </div>
         </div>
 
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Trocar senha (primeiro acesso) -->
+<div class="modal-overlay" id="modal-change-password">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <span class="modal-title"><span data-icon="lock"></span> Defina sua nova senha</span>
+    </div>
+    <div class="modal-body">
+      <div style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);border-radius:var(--radius-lg);padding:var(--space-4);margin-bottom:var(--space-5);display:flex;gap:var(--space-3);">
+        <span data-icon="info" style="color:var(--forte-accent);flex-shrink:0;"></span>
+        <div style="font-size:var(--text-sm);color:var(--forte-text-secondary);line-height:1.5;">Seu professor criou seu acesso com uma senha temporária. Crie uma senha pessoal agora para proteger sua conta.</div>
+      </div>
+      <form id="form-change-password" onsubmit="handleChangePassword(event)">
+        <div class="form-group">
+          <label class="form-label" for="cp-senha-atual">Senha temporária (enviada pelo professor)</label>
+          <input class="form-input" type="password" id="cp-senha-atual" required placeholder="Senha que você recebeu">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cp-nova-senha">Nova senha <span style="color:var(--forte-text-muted);font-weight:400;">(mín. 8 caracteres)</span></label>
+          <div style="position:relative;">
+            <input class="form-input" type="password" id="cp-nova-senha" required placeholder="Escolha uma senha forte" oninput="checkNewSenha(this.value)">
+          </div>
+          <div style="margin-top:6px;height:4px;background:var(--forte-border);border-radius:2px;overflow:hidden;"><div id="cp-senha-bar" style="height:100%;width:0%;transition:all 0.3s;border-radius:2px;background:var(--forte-danger);"></div></div>
+          <div id="cp-senha-label" style="font-size:var(--text-xs);color:var(--forte-text-muted);margin-top:4px;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cp-confirmar">Confirmar nova senha</label>
+          <input class="form-input" type="password" id="cp-confirmar" required placeholder="Repita a senha">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-change-password">Salvar nova senha</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: IA — Adaptar treino -->
+<div class="modal-overlay" id="modal-ia-treino">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <span class="modal-title"><span data-icon="sparkles"></span> IA — Adaptar meu treino</span>
+      <button class="btn btn-ghost btn-icon" onclick="closeIAModal()" aria-label="Fechar"><span data-icon="x"></span></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:var(--text-sm);color:var(--forte-text-secondary);margin-bottom:var(--space-4);">Descreva como você está hoje e a IA sugerirá adaptações para o treino.</p>
+      <div class="form-group">
+        <label class="form-label" for="ia-issue">Como você está hoje?</label>
+        <textarea class="form-input" id="ia-issue" rows="3" placeholder="Ex: Dor no ombro direito, muito cansado, perna travada do dia anterior..."></textarea>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="runAdaptWorkout()" id="btn-run-ia">
+        <span data-icon="sparkles"></span> Gerar adaptação
+      </button>
+      <div id="ia-result" style="display:none;margin-top:var(--space-5);background:var(--forte-surface);border:1px solid var(--forte-border);border-radius:var(--radius-lg);padding:var(--space-4);">
+        <div style="font-size:var(--text-xs);font-weight:700;color:var(--forte-accent);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--space-3);">Sugestão da IA</div>
+        <div id="ia-result-text" style="font-size:var(--text-sm);color:var(--forte-text-secondary);line-height:1.7;white-space:pre-wrap;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: IA — Insights de evolução -->
+<div class="modal-overlay" id="modal-ia-insights">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <span class="modal-title"><span data-icon="trending-up"></span> IA — Análise da sua evolução</span>
+      <button class="btn btn-ghost btn-icon" onclick="document.getElementById('modal-ia-insights').classList.remove('open')" aria-label="Fechar"><span data-icon="x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div id="insights-loading" style="text-align:center;padding:var(--space-8);">
+        <span data-icon="loader" style="font-size:2rem;color:var(--forte-accent);"></span>
+        <p style="color:var(--forte-text-muted);margin-top:var(--space-3);">Analisando sua evolução...</p>
+      </div>
+      <div id="insights-result" style="display:none;">
+        <div style="font-size:var(--text-xs);font-weight:700;color:var(--forte-accent);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--space-3);">Análise personalizada</div>
+        <div id="insights-text" style="font-size:var(--text-sm);color:var(--forte-text-secondary);line-height:1.7;white-space:pre-wrap;"></div>
       </div>
     </div>
   </div>
@@ -218,15 +297,34 @@
 
   let activeDayIndex = 0;
 
+  let currentPlan = null;
+  let currentMeasurements = [];
+  let currentObjective = '';
+  let currentSessionsThisMonth = 0;
+
   async function loadDashboard() {
     try {
       const res = await fetch(`${WORKER}/api/student/dashboard`, { credentials:'include' });
       if (res.status === 401) { window.location.href = '../login.html'; return; }
       const d = await res.json();
+      // Verifica troca de senha obrigatória (primeiro acesso)
+      if (d.must_change_password || new URLSearchParams(location.search).get('first_access') === '1') {
+        document.getElementById('modal-change-password').classList.add('open');
+      }
+      currentObjective = d.profile?.objective || '';
+      currentSessionsThisMonth = d.sessions_this_month || 0;
       renderAll(d);
+      loadMeasurementsForIA();
     } catch {
       renderMock();
     }
+  }
+
+  async function loadMeasurementsForIA() {
+    try {
+      const res = await fetch(`${WORKER}/api/student/measurements`, { credentials:'include' });
+      if (res.ok) currentMeasurements = await res.json();
+    } catch { /* silencioso */ }
   }
 
   function renderMock() {
@@ -264,6 +362,7 @@
 
   function renderPlano(plan) {
     if (!plan) return;
+    currentPlan = plan;
     document.getElementById('plano-badge').textContent = `${plan.frequency}x/sem`;
 
     const tabsEl = document.getElementById('treino-tabs');
@@ -321,6 +420,131 @@
     document.getElementById('btn-confirmar').textContent = '✓ Confirmado!';
     document.getElementById('btn-confirmar').disabled = true;
   });
+
+  // ── Troca de senha (primeiro acesso) ─────────────────────────────────────
+  function checkNewSenha(v) {
+    const bar = document.getElementById('cp-senha-bar');
+    const label = document.getElementById('cp-senha-label');
+    let score = 0;
+    if (v.length >= 8) score++;
+    if (v.length >= 12) score++;
+    if (/[A-Z]/.test(v)) score++;
+    if (/[0-9]/.test(v)) score++;
+    if (/[^A-Za-z0-9]/.test(v)) score++;
+    const map = [
+      { pct:'20%', cor:'var(--forte-danger)',  txt:'Muito fraca' },
+      { pct:'40%', cor:'var(--forte-danger)',  txt:'Fraca' },
+      { pct:'60%', cor:'#F59E0B',             txt:'Razoável' },
+      { pct:'80%', cor:'#10B981',             txt:'Boa' },
+      { pct:'100%',cor:'var(--forte-accent)', txt:'Excelente 💪' },
+    ];
+    const s = map[Math.max(0, score - 1)] || map[0];
+    bar.style.width = v.length ? s.pct : '0%';
+    bar.style.background = s.cor;
+    label.textContent = v.length ? s.txt : '';
+  }
+
+  async function handleChangePassword(e) {
+    e.preventDefault();
+    const senhaAtual = document.getElementById('cp-senha-atual').value;
+    const novaSenha  = document.getElementById('cp-nova-senha').value;
+    const confirmar  = document.getElementById('cp-confirmar').value;
+
+    if (novaSenha !== confirmar) { toast('As senhas não coincidem.', 'error'); return; }
+    if (novaSenha.length < 8)   { toast('A nova senha deve ter pelo menos 8 caracteres.', 'error'); return; }
+
+    const btn = document.getElementById('btn-change-password');
+    btn.disabled = true; btn.textContent = 'Salvando...';
+
+    try {
+      const res = await fetch(`${WORKER}/api/auth/change-password`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ senha_atual: senhaAtual, nova_senha: novaSenha })
+      });
+      if (res.ok) {
+        toast('Senha alterada com sucesso! Bem-vindo 💪', 'success');
+        document.getElementById('modal-change-password').classList.remove('open');
+        history.replaceState({}, '', location.pathname);
+      } else {
+        const d = await res.json().catch(() => ({}));
+        toast(d.error || 'Erro ao alterar senha.', 'error');
+        btn.disabled = false; btn.textContent = 'Salvar nova senha';
+      }
+    } catch {
+      toast('Erro de conexão.', 'error');
+      btn.disabled = false; btn.textContent = 'Salvar nova senha';
+    }
+  }
+
+  // ── IA: Adaptar treino ────────────────────────────────────────────────────
+  function openIAModal() {
+    document.getElementById('modal-ia-treino').classList.add('open');
+    document.getElementById('ia-result').style.display = 'none';
+    document.getElementById('ia-issue').value = '';
+  }
+
+  function closeIAModal() {
+    document.getElementById('modal-ia-treino').classList.remove('open');
+  }
+
+  async function runAdaptWorkout() {
+    const issue = document.getElementById('ia-issue').value.trim();
+    if (!issue) { toast('Descreva como você está hoje.', 'error'); return; }
+
+    const activeDay = currentPlan?.days?.[activeDayIndex];
+    const exercises = activeDay?.exercises?.map(e => e.exercise_name) || [];
+
+    const btn = document.getElementById('btn-run-ia');
+    btn.disabled = true; btn.textContent = 'Gerando...';
+
+    try {
+      const res = await fetch(`${WORKER}/ai/student/adapt-workout`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workout_name: activeDay ? `Treino ${activeDay.label} — ${activeDay.title}` : 'Treino do dia',
+          exercises,
+          issue
+        })
+      });
+      const d = await res.json().catch(() => ({}));
+      document.getElementById('ia-result').style.display = '';
+      document.getElementById('ia-result-text').textContent = d.adaptation || 'Não foi possível gerar sugestão.';
+    } catch {
+      toast('Erro ao consultar IA.', 'error');
+    } finally {
+      btn.disabled = false; btn.innerHTML = '<span data-icon="sparkles"></span> Gerar adaptação';
+      if (window.farpaIcons) window.farpaIcons();
+    }
+  }
+
+  // ── IA: Insights de evolução ──────────────────────────────────────────────
+  async function openInsightsModal() {
+    document.getElementById('modal-ia-insights').classList.add('open');
+    document.getElementById('insights-loading').style.display = '';
+    document.getElementById('insights-result').style.display = 'none';
+
+    try {
+      const res = await fetch(`${WORKER}/ai/student/insights`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          measurements: currentMeasurements,
+          objective: currentObjective,
+          sessions_this_month: currentSessionsThisMonth
+        })
+      });
+      const d = await res.json().catch(() => ({}));
+      document.getElementById('insights-loading').style.display = 'none';
+      document.getElementById('insights-result').style.display = '';
+      document.getElementById('insights-text').textContent = d.insights || 'Não foi possível gerar análise.';
+    } catch {
+      document.getElementById('insights-loading').style.display = 'none';
+      document.getElementById('insights-result').style.display = '';
+      document.getElementById('insights-text').textContent = 'Erro ao consultar IA. Tente novamente.';
+    }
+  }
 
   function toast(msg, type='success') {
     const el = document.createElement('div');

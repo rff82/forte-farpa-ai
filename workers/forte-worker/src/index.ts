@@ -1,19 +1,18 @@
-// forte-worker · src/index.ts · v1.2 · 2026-04-18
+// forte-worker · src/index.ts · v2.0 · 2026-04-18
 // farpa Forte — Personal Trainer Management API
 // Cloudflare Workers · D1 + KV + AI · OAuth via admin.farpa.ai
-// v1.1: PBKDF2 password hashing, registro de professor, seed endpoint
-// v1.2: fix cross-site cookie — SameSite=None; Secure; Partitioned (regra master ecossistema)
+// v2.0: IA professor/aluno, change-password, aluno criado pelo professor
 
 export interface Env {
   DB:    D1Database;
   CACHE: KVNamespace;
   AI:    Ai;
-  ENVIRONMENT:         string;
-  PRODUCT_NAME:        string;
-  CLIENT_ID:           string;
-  ALLOWED_ORIGIN:            string;
-  CLIENT_SECRET:             string;
-  SESSION_COOKIE_SECRET:     string;
+  ENVIRONMENT:           string;
+  PRODUCT_NAME:          string;
+  CLIENT_ID:             string;
+  ALLOWED_ORIGIN:        string;
+  CLIENT_SECRET:         string;
+  SESSION_COOKIE_SECRET: string;
 }
 
 const ALLOWED_ORIGINS = [
@@ -57,31 +56,29 @@ function base64url(buf: Uint8Array): string {
   return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-// ── PBKDF2 password hashing (Web Crypto — roda em Workers) ───────────────────
+// ── PBKDF2 password hashing ───────────────────────────────────────────────────
 
-const PBKDF2_ITERATIONS = 100_000; // free tier: max ~10ms CPU; 100k SHA-256 ≈ 8ms
+const PBKDF2_ITERATIONS = 100_000;
 const PBKDF2_HASH      = 'SHA-256';
 const SALT_BYTES       = 16;
 const KEY_BYTES        = 32;
 
 async function hashPassword(password: string): Promise<string> {
-  const salt      = crypto.getRandomValues(new Uint8Array(SALT_BYTES));
-  const keyMat    = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
-  const bits      = await crypto.subtle.deriveBits({ name:'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: PBKDF2_HASH }, keyMat, KEY_BYTES * 8);
-  const key       = new Uint8Array(bits);
-  // formato: base64(salt) + ":" + base64(key)
+  const salt   = crypto.getRandomValues(new Uint8Array(SALT_BYTES));
+  const keyMat = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits   = await crypto.subtle.deriveBits({ name:'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: PBKDF2_HASH }, keyMat, KEY_BYTES * 8);
+  const key    = new Uint8Array(bits);
   return btoa(String.fromCharCode(...salt)) + ':' + btoa(String.fromCharCode(...key));
 }
 
 async function verifyPassword(password: string, stored: string): Promise<boolean> {
   const [saltB64, keyB64] = stored.split(':');
   if (!saltB64 || !keyB64) return false;
-  const salt    = Uint8Array.from(atob(saltB64), c => c.charCodeAt(0));
-  const expected= Uint8Array.from(atob(keyB64),  c => c.charCodeAt(0));
-  const keyMat  = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
-  const bits    = await crypto.subtle.deriveBits({ name:'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: PBKDF2_HASH }, keyMat, KEY_BYTES * 8);
-  const derived = new Uint8Array(bits);
-  // timing-safe comparison
+  const salt     = Uint8Array.from(atob(saltB64), c => c.charCodeAt(0));
+  const expected = Uint8Array.from(atob(keyB64),  c => c.charCodeAt(0));
+  const keyMat   = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits     = await crypto.subtle.deriveBits({ name:'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: PBKDF2_HASH }, keyMat, KEY_BYTES * 8);
+  const derived  = new Uint8Array(bits);
   if (derived.length !== expected.length) return false;
   let diff = 0;
   for (let i = 0; i < derived.length; i++) diff |= derived[i] ^ expected[i];
@@ -98,40 +95,29 @@ async function requireSession(request: Request, env: Env): Promise<{ user_id: st
 }
 
 function sessionCookie(sid: string, maxAge = 86400): string {
-  // Cross-site cookie: Pages (forte.farpa.ai) e Worker (*.workers.dev) estão em
-  // origens distintas. SameSite=Lax faria o browser não enviar o cookie em
-  // fetch com credentials:'include'. Partitioned (CHIPS) prepara para o default
-  // de cookie partitioning do Chrome. Ver farpa-reengenharia/03-arquitetura/02.
+  // Cross-site: SameSite=Lax quebra login (incidente 2026-04-18)
   return [
-    `forte_sid=${sid}`,
-    'Path=/',
-    'HttpOnly',
-    'Secure',
-    'SameSite=None',
-    'Partitioned',
-    `Max-Age=${maxAge}`,
+    `forte_sid=${sid}`, 'Path=/', 'HttpOnly', 'Secure', 'SameSite=None', 'Partitioned', `Max-Age=${maxAge}`,
   ].join('; ');
 }
 
 function clearSessionCookie(): string {
-  return [
-    'forte_sid=',
-    'Path=/',
-    'HttpOnly',
-    'Secure',
-    'SameSite=None',
-    'Partitioned',
-    'Max-Age=0',
-  ].join('; ');
+  return ['forte_sid=', 'Path=/', 'HttpOnly', 'Secure', 'SameSite=None', 'Partitioned', 'Max-Age=0'].join('; ');
 }
 
-// ── Helpers D1 ────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function dayStart() { const d = new Date(); d.setHours(0,0,0,0);   return Math.floor(d.getTime()/1000); }
 function dayEnd()   { const d = new Date(); d.setHours(23,59,59,0); return Math.floor(d.getTime()/1000); }
 function monthStart() {
   const d = new Date();
   return Math.floor(new Date(d.getFullYear(), d.getMonth(), 1).getTime()/1000);
+}
+
+async function runAI(env: Env, prompt: string): Promise<string> {
+  const resp = await env.AI.run('@cf/meta/llama-3.1-8b-instruct' as Parameters<Ai['run']>[0], { prompt });
+  const r = resp as { response?: string };
+  return r?.response || '';
 }
 
 // ── Worker entry ──────────────────────────────────────────────────────────────
@@ -184,34 +170,31 @@ export default {
       // ── Auth: Login email/senha ───────────────────────────────────────────
       if (path === '/api/auth/login' && request.method === 'POST') {
         const b = await request.json() as { email:string; senha:string; role:string };
-        const user = await env.DB.prepare('SELECT id,name,role,password_hash FROM users WHERE email=? AND role=?')
-          .bind(b.email.toLowerCase().trim(), b.role).first() as { id:string; name:string; role:string; password_hash:string|null } | null;
+        const user = await env.DB.prepare('SELECT id,name,role,password_hash,must_change_password FROM users WHERE email=? AND role=?')
+          .bind(b.email.toLowerCase().trim(), b.role).first() as { id:string; name:string; role:string; password_hash:string|null; must_change_password:number } | null;
 
         if (!user) {
-          // timing attack mitigation — sempre calcula hash mesmo quando user não existe
-          await hashPassword(b.senha);
+          await hashPassword(b.senha); // timing attack mitigation
           return jsonResp({ error:'credenciais inválidas' }, 401, cors);
         }
 
-        const valid = user.password_hash
-          ? await verifyPassword(b.senha, user.password_hash)
-          : false;
-
+        const valid = user.password_hash ? await verifyPassword(b.senha, user.password_hash) : false;
         if (!valid) return jsonResp({ error:'credenciais inválidas' }, 401, cors);
 
         const sid = crypto.randomUUID();
         await env.CACHE.put(`session:${sid}`, JSON.stringify({ user_id: user.id, role: user.role, name: user.name }), { expirationTtl: 86400 });
-        return new Response(JSON.stringify({ ok:true }), {
+        return new Response(JSON.stringify({ ok:true, must_change_password: user.must_change_password === 1 }), {
           status: 200,
           headers: { 'Content-Type':'application/json', 'Set-Cookie': sessionCookie(sid), ...cors }
         });
       }
 
-      // ── Auth: Me (session info) ───────────────────────────────────────────
+      // ── Auth: Me ──────────────────────────────────────────────────────────
       if (path === '/api/auth/me' && request.method === 'GET') {
         const session = await requireSession(request, env);
         if (!session) return jsonResp({ error:'unauthorized' }, 401, cors);
-        return jsonResp(session, 200, cors);
+        const user = await env.DB.prepare('SELECT must_change_password FROM users WHERE id=?').bind(session.user_id).first() as {must_change_password:number}|null;
+        return jsonResp({ ...session, must_change_password: user?.must_change_password === 1 }, 200, cors);
       }
 
       // ── Auth: Logout ──────────────────────────────────────────────────────
@@ -222,6 +205,28 @@ export default {
           status: 200,
           headers: { 'Content-Type':'application/json', 'Set-Cookie': clearSessionCookie(), ...cors }
         });
+      }
+
+      // ── Auth: Trocar senha (aluno no primeiro acesso ou por vontade própria) ─
+      if (path === '/api/auth/change-password' && request.method === 'POST') {
+        const session = await requireSession(request, env);
+        if (!session) return jsonResp({ error:'unauthorized' }, 401, cors);
+
+        const b = await request.json() as { senha_atual:string; nova_senha:string };
+        if (!b.senha_atual || !b.nova_senha) return jsonResp({ error:'campos obrigatórios: senha_atual, nova_senha' }, 400, cors);
+        if (b.nova_senha.length < 8) return jsonResp({ error:'nova senha deve ter ao menos 8 caracteres' }, 400, cors);
+
+        const user = await env.DB.prepare('SELECT password_hash FROM users WHERE id=?').bind(session.user_id).first() as {password_hash:string}|null;
+        if (!user) return jsonResp({ error:'usuário não encontrado' }, 404, cors);
+
+        const valid = await verifyPassword(b.senha_atual, user.password_hash);
+        if (!valid) return jsonResp({ error:'senha atual incorreta' }, 401, cors);
+
+        const newHash = await hashPassword(b.nova_senha);
+        await env.DB.prepare('UPDATE users SET password_hash=?, must_change_password=0, updated_at=unixepoch() WHERE id=?')
+          .bind(newHash, session.user_id).run();
+
+        return jsonResp({ ok:true }, 200, cors);
       }
 
       // ── OAuth: redirect to admin.farpa.ai ────────────────────────────────
@@ -320,11 +325,11 @@ export default {
           if (!b.name || !b.email) return jsonResp({ error:'name e email são obrigatórios' }, 400, cors);
           const existingUser = await env.DB.prepare('SELECT id FROM users WHERE email=?').bind(b.email.toLowerCase().trim()).first();
           if (existingUser) return jsonResp({ error:'e-mail já cadastrado' }, 409, cors);
-          // Usa senha fornecida pelo professor; senão gera uma de 8 chars legível
           const plainPassword = b.senha || Math.random().toString(36).slice(-4) + Math.random().toString(36).slice(-4).toUpperCase();
           const passHash = await hashPassword(plainPassword);
           const userId   = crypto.randomUUID().replace(/-/g,'').slice(0,16);
-          await env.DB.prepare('INSERT INTO users (id,email,name,role,phone,password_hash) VALUES (?,?,?,?,?,?)')
+          // must_change_password=1: aluno obrigado a trocar a senha criada pelo professor
+          await env.DB.prepare('INSERT INTO users (id,email,name,role,phone,password_hash,must_change_password) VALUES (?,?,?,?,?,?,1)')
             .bind(userId, b.email.toLowerCase().trim(), b.name, 'aluno', b.phone||null, passHash).run();
           const studentId = crypto.randomUUID().replace(/-/g,'').slice(0,16);
           await env.DB.prepare('INSERT INTO student_profiles (id,user_id,professor_id,objective,plan_type,sessions_per_week,plan_value) VALUES (?,?,?,?,?,?,?)')
@@ -334,7 +339,6 @@ export default {
             await env.DB.prepare('INSERT INTO anamneses (id,student_id,has_heart_issue,has_hypertension,has_diabetes,has_joint_pain,injuries,observations) VALUES (?,?,?,?,?,?,?,?)')
               .bind(crypto.randomUUID().replace(/-/g,'').slice(0,16), studentId, a.has_heart_issue||0, a.has_hypertension||0, a.has_diabetes||0, a.has_joint_pain||0, a.injuries||null, a.observations||null).run();
           }
-          // Retorna senha em texto para o professor repassar ao aluno (só na criação)
           return jsonResp({ ok:true, student_id: studentId, senha_acesso: plainPassword }, 201, cors);
         }
       }
@@ -398,8 +402,8 @@ export default {
 
       // ── Aluno: Dashboard ──────────────────────────────────────────────────
       if (path === '/api/student/dashboard' && request.method === 'GET') {
-        const profile = await env.DB.prepare('SELECT sp.*, u.name FROM student_profiles sp JOIN users u ON sp.user_id=u.id WHERE sp.user_id=?')
-          .bind(session.user_id).first() as {id:string;professor_id:string;name:string}|null;
+        const profile = await env.DB.prepare('SELECT sp.*, u.name, u.must_change_password FROM student_profiles sp JOIN users u ON sp.user_id=u.id WHERE sp.user_id=?')
+          .bind(session.user_id).first() as {id:string;professor_id:string;name:string;must_change_password:number}|null;
         if (!profile) return jsonResp({ error:'student not found' }, 404, cors);
         const [nextSession, lastMeasurement, currentPayment, sessionsMonth] = await Promise.all([
           env.DB.prepare('SELECT s.* FROM sessions s WHERE s.student_id=? AND s.scheduled_at>? ORDER BY s.scheduled_at LIMIT 1').bind(profile.id, Math.floor(Date.now()/1000)).first(),
@@ -407,7 +411,14 @@ export default {
           env.DB.prepare('SELECT * FROM payments WHERE student_id=? ORDER BY due_date DESC LIMIT 1').bind(profile.id).first(),
           env.DB.prepare('SELECT COUNT(*) as count FROM sessions WHERE student_id=? AND scheduled_at>=? AND status="realizada"').bind(profile.id, monthStart()).first(),
         ]);
-        return jsonResp({ profile, next_session: nextSession, last_measurement: lastMeasurement, current_payment: currentPayment, sessions_this_month: (sessionsMonth as {count:number}|null)?.count ?? 0 }, 200, cors);
+        return jsonResp({
+          profile,
+          must_change_password: profile.must_change_password === 1,
+          next_session: nextSession,
+          last_measurement: lastMeasurement,
+          current_payment: currentPayment,
+          sessions_this_month: (sessionsMonth as {count:number}|null)?.count ?? 0,
+        }, 200, cors);
       }
 
       // ── Aluno: Medições ───────────────────────────────────────────────────
@@ -428,12 +439,116 @@ export default {
         }
       }
 
-      // ── AI: Sugestão de treino ────────────────────────────────────────────
+      // ── IA: Professor — Gerar plano de treino ─────────────────────────────
+      if (path === '/ai/professor/generate-plan' && request.method === 'POST') {
+        if (session.role !== 'professor') return jsonResp({ error:'forbidden' }, 403, cors);
+        const b = await request.json() as { student_name:string; objective:string; sessions_per_week:number; restrictions?:string; notes?:string };
+        const prompt = `Você é um personal trainer especialista. Crie um plano de treino semanal detalhado para o aluno "${b.student_name}".
+
+Informações do aluno:
+- Objetivo: ${b.objective}
+- Sessões por semana: ${b.sessions_per_week}x
+- Restrições/lesões: ${b.restrictions || 'Nenhuma'}
+- Observações: ${b.notes || 'Nenhuma'}
+
+Gere um plano com ${b.sessions_per_week} treinos (A, B, C...), cada um com 5-6 exercícios, incluindo séries, repetições e tempo de descanso. Organize por grupos musculares de forma equilibrada. Use nomes de exercícios em português. Seja objetivo e prático. Formate como uma lista clara.`;
+
+        const text = await runAI(env, prompt);
+        return jsonResp({ plan: text }, 200, cors);
+      }
+
+      // ── IA: Professor — Analisar evolução do aluno ────────────────────────
+      if (path === '/ai/professor/analyze-student' && request.method === 'POST') {
+        if (session.role !== 'professor') return jsonResp({ error:'forbidden' }, 403, cors);
+        const b = await request.json() as { student_name:string; measurements: Array<{measured_at:number;weight_kg?:number;body_fat_pct?:number}>; sessions_count?:number; objective?:string };
+
+        if (!b.measurements?.length) return jsonResp({ error:'measurements obrigatório' }, 400, cors);
+
+        const medFormatted = b.measurements.map(m => {
+          const d = new Date(m.measured_at * 1000).toLocaleDateString('pt-BR');
+          return `${d}: peso ${m.weight_kg ?? '?'}kg, gordura ${m.body_fat_pct ?? '?'}%`;
+        }).join('\n');
+
+        const prompt = `Você é um personal trainer analisando a evolução do aluno "${b.student_name}".
+
+Objetivo do aluno: ${b.objective || 'Não definido'}
+Sessões realizadas no mês: ${b.sessions_count ?? 'não informado'}
+
+Histórico de medições:
+${medFormatted}
+
+Analise a evolução em português. Identifique se há progresso, estagnação ou regressão. Dê 2-3 recomendações práticas e específicas para o professor ajustar o programa. Seja direto e técnico.`;
+
+        const text = await runAI(env, prompt);
+        return jsonResp({ analysis: text }, 200, cors);
+      }
+
+      // ── IA: Professor — Rascunho de cobrança (WhatsApp) ───────────────────
+      if (path === '/ai/professor/draft-message' && request.method === 'POST') {
+        if (session.role !== 'professor') return jsonResp({ error:'forbidden' }, 403, cors);
+        const b = await request.json() as { student_name:string; amount:number; days_overdue:number; professor_name?:string };
+
+        const prompt = `Escreva uma mensagem de WhatsApp curta e amigável de cobrança de mensalidade de personal training para o aluno "${b.student_name}".
+
+Valor: R$ ${b.amount.toFixed(2)}
+Dias em atraso: ${b.days_overdue}
+Professor: ${b.professor_name || 'seu professor'}
+
+A mensagem deve ser cordial, profissional e direta, sem pressão. Máximo 3 parágrafos curtos. Inclua o valor e uma forma de pagar (ex: Pix). Comece com uma saudação informal. Escreva apenas a mensagem, sem explicações.`;
+
+        const text = await runAI(env, prompt);
+        return jsonResp({ message: text }, 200, cors);
+      }
+
+      // ── IA: Aluno — Insights de evolução ─────────────────────────────────
+      if (path === '/ai/student/insights' && request.method === 'POST') {
+        if (session.role !== 'aluno') return jsonResp({ error:'forbidden' }, 403, cors);
+        const b = await request.json() as { measurements: Array<{measured_at:number;weight_kg?:number;body_fat_pct?:number}>; objective?:string; sessions_this_month?:number };
+
+        if (!b.measurements?.length) return jsonResp({ error:'measurements obrigatório' }, 400, cors);
+
+        const medFormatted = b.measurements.map(m => {
+          const d = new Date(m.measured_at * 1000).toLocaleDateString('pt-BR');
+          return `${d}: peso ${m.weight_kg ?? '?'}kg, gordura ${m.body_fat_pct ?? '?'}%`;
+        }).join('\n');
+
+        const prompt = `Você é um personal trainer motivador dando feedback de evolução para um aluno.
+
+Objetivo do aluno: ${b.objective || 'Melhora geral'}
+Sessões este mês: ${b.sessions_this_month ?? 'não informado'}
+
+Histórico de medições:
+${medFormatted}
+
+Analise a evolução em português de forma motivadora e encorajadora. Destaque os pontos positivos, celebre o progresso (mesmo pequeno) e dê 1-2 dicas práticas de foco para as próximas semanas. Tom positivo, pessoal e energético. Máximo 3 parágrafos.`;
+
+        const text = await runAI(env, prompt);
+        return jsonResp({ insights: text }, 200, cors);
+      }
+
+      // ── IA: Aluno — Adaptar treino do dia ────────────────────────────────
+      if (path === '/ai/student/adapt-workout' && request.method === 'POST') {
+        if (session.role !== 'aluno') return jsonResp({ error:'forbidden' }, 403, cors);
+        const b = await request.json() as { workout_name:string; exercises: string[]; issue:string };
+
+        const prompt = `Você é um personal trainer adaptando um treino para um aluno que relatou um problema.
+
+Treino original: ${b.workout_name}
+Exercícios: ${b.exercises?.join(', ') || 'não informado'}
+Problema relatado pelo aluno: ${b.issue}
+
+Sugira adaptações específicas para o treino de hoje. Para cada exercício que precisa ser modificado, indique o substituto ou a adaptação. Use linguagem simples e encorajadora. Máximo 5 bullets. Responda em português.`;
+
+        const text = await runAI(env, prompt);
+        return jsonResp({ adaptation: text }, 200, cors);
+      }
+
+      // ── IA: Sugestão de treino (legado) ───────────────────────────────────
       if (path === '/ai/suggest-workout' && request.method === 'POST') {
         const b = await request.json() as {profile?:Record<string,unknown>};
         const prompt = `Você é um personal trainer especialista. Sugira um plano de treino semanal detalhado para um aluno com o seguinte perfil: ${JSON.stringify(b.profile||{})}. Inclua exercícios, séries, repetições e descanso. Seja objetivo e profissional. Responda em português.`;
-        const response = await env.AI.run('@cf/meta/llama-3.1-8b-instruct' as Parameters<Ai['run']>[0], { prompt });
-        return jsonResp(response, 200, cors);
+        const text = await runAI(env, prompt);
+        return jsonResp({ response: text }, 200, cors);
       }
 
       return jsonResp({ error:'Not found' }, 404, cors);
