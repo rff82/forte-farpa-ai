@@ -17,7 +17,7 @@
 <body style="--logo-mark-bg: var(--forte-accent);">
 
   <!-- Topbar público -->
-  <nav style="position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,10,10,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--forte-border);padding:0 var(--space-7);height:64px;display:flex;align-items:center;justify-content:space-between;">
+  <nav class="landing-nav">
     <a href="/" class="farpa-logo">
       <div class="farpa-logo-mark farpa-logo-mark--sm">F</div>
       <div class="farpa-logo-text">
@@ -25,9 +25,9 @@
         <span class="farpa-logo-sublabel">forte.farpa.ai</span>
       </div>
     </a>
-    <div style="display:flex;align-items:center;gap:var(--space-4);">
-      <button id="btn-alto-contraste" aria-label="Ativar alto contraste"><span data-icon="contrast"></span> Contraste</button>
-      <a href="login.html" class="btn btn-secondary btn-sm">Entrar</a>
+    <div class="landing-nav-actions">
+      <button id="btn-alto-contraste" class="nav-contraste" aria-label="Ativar alto contraste"><span data-icon="contrast"></span><span class="nav-contraste-label"> Contraste</span></button>
+      <a href="login.html" class="btn btn-secondary btn-sm nav-entrar">Entrar</a>
       <a href="login.html?mode=register" class="btn btn-primary btn-sm">Começar grátis</a>
     </div>
   </nav>

@@ -826,6 +826,26 @@ select.form-input {
 .psummary-value.overdue-color { color: var(--forte-danger);  }
 .psummary-sub { font-size: var(--text-xs); color: var(--forte-text-muted); margin-top: var(--space-1); }
 
+/* ── Landing Nav ── */
+.landing-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  background: rgba(10,10,10,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--forte-border);
+  padding: 0 var(--space-7);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.landing-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
 /* ── Landing Page ── */
 .landing-wrap {
   min-height: 100vh;
@@ -1334,19 +1354,30 @@ body.theme-alto-contraste {
 }
 
 @media (max-width: 640px) {
-  .stats-grid       { grid-template-columns: repeat(2, 1fr); }
-  .metrics-grid     { grid-template-columns: repeat(2, 1fr); }
-  .page-content     { padding: var(--space-4); }
-  .topbar           { padding: var(--space-3) var(--space-4); }
-  .landing-h1       { font-size: 2.4rem; letter-spacing: -1.5px; }
+  .stats-grid        { grid-template-columns: repeat(2, 1fr); }
+  .metrics-grid      { grid-template-columns: repeat(2, 1fr); }
+  .page-content      { padding: var(--space-4); }
+  .topbar            { padding: var(--space-3) var(--space-4); }
+  .landing-h1        { font-size: 2.4rem; letter-spacing: -1.5px; }
   .landing-stats-row { gap: var(--space-6); }
-  .landing-features { grid-template-columns: 1fr; }
-  .form-grid-3      { grid-template-columns: 1fr; }
-  .payment-summary  { grid-template-columns: 1fr; }
-  .cal-grid         { grid-template-columns: 40px repeat(7,1fr); }
-  .login-right      { padding: var(--space-5) var(--space-4); align-items: stretch; }
-  .login-form-box   { max-width: 100%; }
+  .landing-features  { grid-template-columns: 1fr; }
+  .form-grid-3       { grid-template-columns: 1fr; }
+  .payment-summary   { grid-template-columns: 1fr; }
+  .cal-grid          { grid-template-columns: 40px repeat(7,1fr); }
+  /* Login mobile */
+  .login-right       { padding: var(--space-5) var(--space-4); align-items: stretch; }
+  .login-form-box    { max-width: 100%; }
   .login-form-heading { font-size: var(--text-xl); }
-  .login-tabs       { margin-bottom: var(--space-5); }
-  .btn-lg           { padding: var(--space-4) var(--space-5); font-size: var(--text-base); }
+  .login-tabs        { margin-bottom: var(--space-5); }
+  .btn-lg            { padding: var(--space-4) var(--space-5); font-size: var(--text-base); }
+  /* Landing nav mobile */
+  .landing-nav       { padding: 0 var(--space-4); }
+  .landing-nav-actions { gap: var(--space-2); }
+  .nav-contraste-label { display: none; }
+  .nav-entrar        { display: none; }
+  .landing-nav .farpa-logo-sublabel { display: none; }
+  /* Landing content mobile */
+  .landing-wrap      { padding: var(--space-8) var(--space-4); }
+  .landing-actions   { flex-direction: column; align-items: stretch; }
+  .landing-actions .btn { text-align: center; justify-content: center; }
 }
