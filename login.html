@@ -50,14 +50,13 @@
         <button id="btn-alto-contraste" aria-label="Ativar alto contraste"><span data-icon="contrast"></span> Contraste</button>
       </div>
 
-      <!-- Tabs: Professor / Aluno -->
-      <div class="login-tabs" role="tablist" id="role-tabs">
-        <button class="login-tab active" id="tab-professor" role="tab" aria-selected="true" onclick="switchRole('professor')">
-          <span data-icon="dumbbell"></span> Professor
-        </button>
-        <button class="login-tab" id="tab-aluno" role="tab" aria-selected="false" onclick="switchRole('aluno')">
-          <span data-icon="user"></span> Aluno
-        </button>
+      <!-- Seletor de perfil -->
+      <div class="form-group" style="margin-bottom:var(--space-6);">
+        <label class="form-label" for="role-select">Entrar como</label>
+        <select class="form-input" id="role-select" onchange="switchRole(this.value)">
+          <option value="professor">Personal Trainer</option>
+          <option value="aluno">Aluno</option>
+        </select>
       </div>
 
       <!-- ═══════════════ PROFESSOR ═══════════════ -->
@@ -167,15 +166,12 @@
   let currentRole = 'professor';
   let currentMode = 'login'; // 'login' | 'register'
 
-  // ── Tab role ──────────────────────────────────────────────────────────────
+  // ── Seletor de perfil ─────────────────────────────────────────────────────
   function switchRole(role) {
     currentRole = role;
     document.getElementById('panel-professor').style.display = role === 'professor' ? '' : 'none';
     document.getElementById('panel-aluno').style.display     = role === 'aluno'     ? '' : 'none';
-    document.getElementById('tab-professor').classList.toggle('active', role === 'professor');
-    document.getElementById('tab-aluno').classList.toggle('active', role === 'aluno');
-    document.getElementById('tab-professor').setAttribute('aria-selected', role === 'professor');
-    document.getElementById('tab-aluno').setAttribute('aria-selected', role === 'aluno');
+    document.getElementById('role-select').value = role;
   }
 
   // ── Toggle login / register ───────────────────────────────────────────────
