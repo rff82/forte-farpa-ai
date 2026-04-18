@@ -436,6 +436,38 @@ img { max-width: 100%; display: block; }
 .btn-lg  { padding: var(--space-4) var(--space-7); font-size: var(--text-base); }
 .btn-block { width: 100%; justify-content: center; }
 .btn-icon { width: 36px; height: 36px; padding: 0; justify-content: center; flex-shrink: 0; }
+
+.btn-google {
+  background: var(--forte-card);
+  color: var(--forte-text-primary);
+  border: 1px solid var(--forte-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  font-weight: 600;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-google:hover {
+  background: var(--forte-card-hover);
+  border-color: rgba(255,255,255,0.15);
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-5) 0;
+  color: var(--forte-text-muted);
+  font-size: var(--text-sm);
+}
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--forte-border);
+}
 .btn-icon.btn-lg { width: 44px; height: 44px; }
 
 /* ── Badges ── */
@@ -1114,6 +1146,42 @@ select.form-input {
 }
 
 .login-form-box { width: 100%; max-width: 380px; }
+
+/* Role toggle — radio pills */
+.role-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.role-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--forte-border);
+  border-radius: var(--radius-lg);
+  background: var(--forte-surface);
+  color: var(--forte-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  user-select: none;
+  position: relative;
+}
+
+.role-option:hover {
+  border-color: var(--forte-accent);
+  color: var(--forte-accent);
+}
+
+.role-option--active {
+  border-color: var(--forte-accent);
+  background: color-mix(in srgb, var(--forte-accent) 12%, transparent);
+  color: var(--forte-accent);
+}
 
 .login-tabs {
   display: flex;
