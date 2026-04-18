@@ -120,20 +120,7 @@
   </footer>
 
   <script src="icons.js"></script>
-  <script>
-    const btn = document.getElementById('btn-alto-contraste');
-    btn.addEventListener('click', () => {
-      document.body.classList.toggle('theme-alto-contraste');
-      localStorage.setItem('forte-tema', document.body.className);
-    });
-    const saved = localStorage.getItem('forte-tema');
-    if (saved) {
-      document.body.className = saved;
-      if (!document.body.style.cssText.includes('--logo-mark-bg')) {
-        document.body.style.setProperty('--logo-mark-bg', 'var(--forte-accent)');
-      }
-    }
-  </script>
+  <script src="theme-engine.js"></script>
 
 </body>
 </html>

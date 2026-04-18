@@ -29,6 +29,6 @@
   "vars": {
     "ENVIRONMENT":  "production",
     "PRODUCT_NAME": "forte",
-    "CLIENT_ID":    "COLE_O_CLIENT_ID_AQUI"
+    "CLIENT_ID":    ""
   }
 }

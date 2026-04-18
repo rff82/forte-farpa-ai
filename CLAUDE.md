@@ -1,5 +1,5 @@
 # CLAUDE.md — farpa Forte
-> Arquivo de contexto automático · rff82/forte-farpa-ai · v1.1 · 2026-04-18
+> Arquivo de contexto automático · rff82/forte-farpa-ai · v1.2 · 2026-04-18
 
 ---
 
@@ -38,7 +38,10 @@ Ordem de carregamento obrigatória:
 <link rel="stylesheet" href="logo-system.css">
 <link rel="stylesheet" href="forte.css">
 <script src="icons.js"></script>
+<script src="theme-engine.js"></script>
 ```
+
+> ⚠️ `theme-engine.js` gerencia `#btn-alto-contraste` via `farpa-tema` em `localStorage`. NÃO adicionar handler inline de alto contraste — conflito com o engine. O tema persiste entre todas as páginas automaticamente.
 
 ---
 

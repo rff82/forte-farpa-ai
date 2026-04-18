@@ -164,6 +164,7 @@
 <div class="toast-container" id="toasts"></div>
 
 <script src="../icons.js"></script>
+<script src="../theme-engine.js"></script>
 <script>
   const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
   const DAYS   = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
@@ -317,13 +318,6 @@
     document.getElementById('toasts').appendChild(el);
     setTimeout(() => el.remove(), 4000);
   }
-
-  document.getElementById('btn-alto-contraste').addEventListener('click', () => {
-    document.body.classList.toggle('theme-alto-contraste');
-    localStorage.setItem('forte-tema', document.body.className);
-  });
-  const saved = localStorage.getItem('forte-tema');
-  if (saved) document.body.className = saved;
 
   loadWeek();
 </script>

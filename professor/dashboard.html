@@ -41,7 +41,7 @@
         </a>
         <a class="nav-item" href="pagamentos.html">
           <span class="nav-icon"><span data-icon="credit-card"></span></span> Pagamentos
-          <span class="nav-badge" id="badge-pendentes">3</span>
+          <span class="nav-badge" id="badge-pendentes" style="display:none;"></span>
         </a>
       </div>
       <div class="nav-section">
@@ -185,6 +185,7 @@
 <div class="toast-container" id="toasts"></div>
 
 <script src="../icons.js"></script>
+<script src="../theme-engine.js"></script>
 <script>
   const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
 
@@ -195,15 +196,6 @@
 
   document.getElementById('today-date').textContent =
     new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
-
-  // Alto contraste
-  const btnAC = document.getElementById('btn-alto-contraste');
-  btnAC.addEventListener('click', () => {
-    document.body.classList.toggle('theme-alto-contraste');
-    localStorage.setItem('forte-tema', document.body.className);
-  });
-  const saved = localStorage.getItem('forte-tema');
-  if (saved) document.body.className = saved;
 
   // Carregar dados
   async function loadDashboard() {
@@ -233,8 +225,12 @@
       ? 'R$ ' + Number(d.monthly_revenue).toLocaleString('pt-BR', {minimumFractionDigits:0})
       : '—';
     document.getElementById('stat-pendentes').textContent = d.pending_payments_count ?? '—';
+    const badge = document.getElementById('badge-pendentes');
     if (d.pending_payments_count > 0) {
-      document.getElementById('badge-pendentes').textContent = d.pending_payments_count;
+      badge.textContent = d.pending_payments_count;
+      badge.style.display = '';
+    } else {
+      badge.style.display = 'none';
     }
   }
 
@@ -292,8 +288,8 @@
     document.getElementById('stat-sessoes').textContent = '3';
     document.getElementById('stat-sessoes-total').textContent = '5';
     document.getElementById('stat-receita').textContent = 'R$ 4.800';
-    document.getElementById('stat-pendentes').textContent = '2';
-    document.getElementById('badge-pendentes').textContent = '2';
+    document.getElementById('stat-pendentes').textContent = '—';
+    const badge = document.getElementById('badge-pendentes'); badge.style.display = 'none';
     renderTimeline([
       { scheduled_at: Math.floor(Date.now()/1000) - 7200, student_name: 'Ana Lima', duration_min: 60, status: 'realizada' },
       { scheduled_at: Math.floor(Date.now()/1000) + 1800, student_name: 'Carlos Mendes', duration_min: 60, status: 'confirmada' },
