@@ -137,7 +137,20 @@ Editar → commit → push main → CI GitHub Actions → CF Pages + Worker (~2 
 > Cada entrada abaixo foi uma falha real — consultar antes de repetir mesma operação.
 > Regra mestre: `farpa-reengenharia/06-operacional/09-ci-self-healing.md`.
 
-<!-- Nenhuma falha registrada ainda. Primeiro run quebrado criará a primeira entrada. -->
+### 2026-04-18 · commit e0b7ddd
+
+- **Pages:** failure (não rodou)
+- **Worker:** failure (não rodou)
+- **Run:** https://github.com/rff82/forte-farpa-ai/actions/runs/24607713261
+- **Sintoma:** run registrada como `.github/workflows/ci.yml` (path em vez do `name:`), zero jobs criados, endpoint `/actions/runs/{id}/jobs` retornou `total_count: 0`.
+
+<details><summary>Causa raiz</summary>
+
+YAML parser interpretou `---` isolado em coluna 1 dentro de heredoc `cat >> CLAUDE.md <<'EOT'` como separador de documento YAML. O literal block (`run: |`) termina quando encontra linha em indentação menor — e `---` em col 1 está fora do bloco, disparando o erro `expected a single document in the stream`.
+
+</details>
+
+> **Lição:** nunca colocar `---` isolado em coluna 1 dentro de `run: |` no YAML. Usar `SEP="---"` + `echo "$SEP"`, ou manter o separador sempre indentado junto ao conteúdo. Fix aplicado em `.github/workflows/ci.yml` e propagado em `orchestrator-farpa/templates/ci.yml.tmpl` (commit subsequente).
 
 ---
 

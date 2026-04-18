@@ -129,16 +129,17 @@ jobs:
           set -e
           DATE=$(date -u +"%Y-%m-%d %H:%MZ")
           SHORT_SHA=$(echo "$COMMIT" | cut -c1-7)
+          SEP="---"
 
           if ! grep -q "^## HISTÓRICO DE FALHAS DE CI" CLAUDE.md; then
-            cat >> CLAUDE.md <<'EOT'
-
----
-
-## HISTÓRICO DE FALHAS DE CI
-> Registro automático escrito pelo job `record-failure` em `.github/workflows/ci.yml`.
-> Cada entrada abaixo foi uma falha real — consultar antes de repetir mesma operação.
-EOT
+            {
+              echo ""
+              echo "$SEP"
+              echo ""
+              echo "## HISTÓRICO DE FALHAS DE CI"
+              echo "> Registro automático escrito pelo job \`record-failure\` em \`.github/workflows/ci.yml\`."
+              echo "> Cada entrada abaixo foi uma falha real — consultar antes de repetir mesma operação."
+            } >> CLAUDE.md
           fi
 
           {
