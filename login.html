@@ -25,159 +25,278 @@
         <div class="login-logo-sub">forte.farpa.ai</div>
       </div>
     </div>
-
-    <h1 class="login-left-title">
+    <h1 class="login-left-title" id="left-title">
       Profissional de verdade<br>usa <span class="accent">ferramenta certa</span>
     </h1>
-
-    <p class="login-left-desc">
+    <p class="login-left-desc" id="left-desc">
       Agenda, alunos, pagamentos e evolução — tudo integrado. Foque no treino, a gestão a gente resolve.
     </p>
-
     <div class="login-left-features">
-      <div class="login-feat-item">
-        <div class="login-feat-check">✓</div>
-        <span>Agenda visual com calendário semanal</span>
-      </div>
-      <div class="login-feat-item">
-        <div class="login-feat-check">✓</div>
-        <span>Controle de pagamentos e inadimplência</span>
-      </div>
-      <div class="login-feat-item">
-        <div class="login-feat-check">✓</div>
-        <span>Evolução do aluno com gráficos reais</span>
-      </div>
-      <div class="login-feat-item">
-        <div class="login-feat-check">✓</div>
-        <span>Planos de treino A/B/C por aluno</span>
-      </div>
-      <div class="login-feat-item">
-        <div class="login-feat-check">✓</div>
-        <span>IA para sugestão de treinos</span>
-      </div>
+      <div class="login-feat-item"><div class="login-feat-check">✓</div><span>Agenda visual com calendário semanal</span></div>
+      <div class="login-feat-item"><div class="login-feat-check">✓</div><span>Controle de pagamentos e inadimplência</span></div>
+      <div class="login-feat-item"><div class="login-feat-check">✓</div><span>Evolução do aluno com gráficos reais</span></div>
+      <div class="login-feat-item"><div class="login-feat-check">✓</div><span>Planos de treino A/B/C por aluno</span></div>
+      <div class="login-feat-item"><div class="login-feat-check">✓</div><span>IA para sugestão de treinos</span></div>
     </div>
   </div>
 
   <!-- Direita: formulário -->
   <div class="login-right">
-    <div class="login-form-box">
+    <div class="login-form-box" style="position:relative;">
 
-      <!-- Role tabs -->
-      <div class="login-tabs" role="tablist">
-        <button class="login-tab active" id="tab-professor" role="tab" aria-selected="true" onclick="switchTab('professor')">
+      <!-- Contraste -->
+      <div style="position:absolute;top:var(--space-4);right:var(--space-4);">
+        <button id="btn-alto-contraste" aria-label="Ativar alto contraste">⊙ Contraste</button>
+      </div>
+
+      <!-- Tabs: Professor / Aluno -->
+      <div class="login-tabs" role="tablist" id="role-tabs">
+        <button class="login-tab active" id="tab-professor" role="tab" aria-selected="true" onclick="switchRole('professor')">
           🏋️ Professor
         </button>
-        <button class="login-tab" id="tab-aluno" role="tab" aria-selected="false" onclick="switchTab('aluno')">
+        <button class="login-tab" id="tab-aluno" role="tab" aria-selected="false" onclick="switchRole('aluno')">
           👤 Aluno
         </button>
       </div>
 
-      <div id="form-professor">
-        <h2 class="login-form-heading">Olá, Personal!</h2>
-        <p class="login-form-sub">Entre na sua área de gestão.</p>
-        <form id="professor-form" onsubmit="handleLogin(event, 'professor')">
-          <div class="form-group">
-            <label class="form-label" for="prof-email">E-mail</label>
-            <input class="form-input" type="email" id="prof-email" name="email" placeholder="seu@email.com" required autocomplete="email">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="prof-senha">Senha</label>
-            <input class="form-input" type="password" id="prof-senha" name="senha" placeholder="••••••••" required autocomplete="current-password">
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-5);">
-            <label style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--forte-text-secondary);cursor:pointer;">
-              <input type="checkbox" style="accent-color:var(--forte-accent)"> Lembrar de mim
-            </label>
-            <a href="#" style="font-size:var(--text-sm);color:var(--forte-accent);">Esqueci a senha</a>
-          </div>
-          <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-login-prof">
-            Entrar como Professor
-          </button>
-        </form>
-        <div class="divider">ou continue com</div>
-        <button class="btn btn-secondary btn-block" onclick="loginWithGoogle('professor')" style="gap:var(--space-3);">
-          <svg width="18" height="18" viewBox="0 0 48 48" fill="none"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-          Google
-        </button>
+      <!-- ═══════════════ PROFESSOR ═══════════════ -->
+      <div id="panel-professor">
+
+        <!-- LOGIN PROFESSOR -->
+        <div id="prof-login">
+          <h2 class="login-form-heading">Olá, Personal!</h2>
+          <p class="login-form-sub">Entre na sua área de gestão.</p>
+          <form onsubmit="handleLogin(event,'professor')">
+            <div class="form-group">
+              <label class="form-label" for="pl-email">E-mail</label>
+              <input class="form-input" type="email" id="pl-email" placeholder="seu@email.com" required autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="pl-senha">Senha</label>
+              <input class="form-input" type="password" id="pl-senha" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-5);">
+              <label style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--forte-text-secondary);cursor:pointer;">
+                <input type="checkbox" style="accent-color:var(--forte-accent)"> Lembrar de mim
+              </label>
+              <a href="#" style="font-size:var(--text-sm);color:var(--forte-accent);">Esqueci a senha</a>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-login-prof">Entrar</button>
+          </form>
+
+          <p style="text-align:center;margin-top:var(--space-5);font-size:var(--text-sm);color:var(--forte-text-muted);">
+            Ainda não tem conta?
+            <button onclick="switchMode('register')" style="background:none;border:none;color:var(--forte-accent);font-weight:700;cursor:pointer;font-size:var(--text-sm);">Criar conta grátis</button>
+          </p>
+        </div>
+
+        <!-- REGISTRO PROFESSOR -->
+        <div id="prof-register" style="display:none;">
+          <h2 class="login-form-heading">Criar conta</h2>
+          <p class="login-form-sub">Comece grátis — sem cartão de crédito.</p>
+          <form onsubmit="handleRegister(event)">
+            <div class="form-group">
+              <label class="form-label" for="pr-nome">Nome completo *</label>
+              <input class="form-input" type="text" id="pr-nome" placeholder="Seu nome" required autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="pr-email">E-mail *</label>
+              <input class="form-input" type="email" id="pr-email" placeholder="seu@email.com" required autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="pr-senha">Senha * <span style="font-size:var(--text-xs);color:var(--forte-text-muted);">(mín. 8 caracteres)</span></label>
+              <div style="position:relative;">
+                <input class="form-input" type="password" id="pr-senha" placeholder="••••••••" required autocomplete="new-password" oninput="checkSenha(this.value)">
+                <button type="button" onclick="toggleSenha('pr-senha',this)" style="position:absolute;right:var(--space-3);top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--forte-text-muted);font-size:var(--text-sm);">👁</button>
+              </div>
+              <!-- força da senha -->
+              <div style="margin-top:var(--space-2);height:4px;background:var(--forte-border);border-radius:2px;overflow:hidden;">
+                <div id="senha-bar" style="height:100%;width:0%;transition:all 0.3s;border-radius:2px;background:var(--forte-danger);"></div>
+              </div>
+              <div id="senha-label" style="font-size:var(--text-xs);color:var(--forte-text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="pr-cref">CREF <span style="color:var(--forte-text-muted);font-weight:400;">(opcional)</span></label>
+              <input class="form-input" type="text" id="pr-cref" placeholder="CREF 000000-G/SP">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-register-prof">Criar minha conta</button>
+          </form>
+
+          <p style="text-align:center;margin-top:var(--space-5);font-size:var(--text-sm);color:var(--forte-text-muted);">
+            Já tem conta?
+            <button onclick="switchMode('login')" style="background:none;border:none;color:var(--forte-accent);font-weight:700;cursor:pointer;font-size:var(--text-sm);">Entrar</button>
+          </p>
+        </div>
+
       </div>
 
-      <div id="form-aluno" style="display:none;">
+      <!-- ═══════════════ ALUNO ═══════════════ -->
+      <div id="panel-aluno" style="display:none;">
         <h2 class="login-form-heading">Olá, Aluno!</h2>
         <p class="login-form-sub">Acesse seu painel de treinos e evolução.</p>
-        <form id="aluno-form" onsubmit="handleLogin(event, 'aluno')">
+        <form onsubmit="handleLogin(event,'aluno')">
           <div class="form-group">
-            <label class="form-label" for="aluno-email">E-mail</label>
-            <input class="form-input" type="email" id="aluno-email" name="email" placeholder="seu@email.com" required autocomplete="email">
+            <label class="form-label" for="al-email">E-mail</label>
+            <input class="form-input" type="email" id="al-email" placeholder="seu@email.com" required autocomplete="email">
           </div>
           <div class="form-group">
-            <label class="form-label" for="aluno-senha">Senha</label>
-            <input class="form-input" type="password" id="aluno-senha" name="senha" placeholder="••••••••" required autocomplete="current-password">
+            <label class="form-label" for="al-senha">Senha</label>
+            <input class="form-input" type="password" id="al-senha" placeholder="••••••••" required autocomplete="current-password">
           </div>
-          <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-login-aluno">
-            Entrar como Aluno
-          </button>
+          <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-login-aluno">Entrar</button>
         </form>
-        <div class="divider">ou continue com</div>
-        <button class="btn btn-secondary btn-block" onclick="loginWithGoogle('aluno')" style="gap:var(--space-3);">
-          <svg width="18" height="18" viewBox="0 0 48 48" fill="none"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-          Google
-        </button>
+        <p style="text-align:center;margin-top:var(--space-4);font-size:var(--text-sm);color:var(--forte-text-muted);">
+          Seu acesso é criado pelo seu personal trainer.
+        </p>
       </div>
 
-      <p style="text-align:center;margin-top:var(--space-6);font-size:var(--text-sm);color:var(--forte-text-muted);">
+      <p style="text-align:center;margin-top:var(--space-6);font-size:var(--text-sm);">
         <a href="/" style="color:var(--forte-text-secondary);">← Voltar para o início</a>
       </p>
 
-      <div style="position:absolute;top:var(--space-4);right:var(--space-4);">
-        <button id="btn-alto-contraste" aria-label="Ativar alto contraste">⊙ Contraste</button>
-      </div>
     </div>
   </div>
-
 </div>
 
-<!-- Toast container -->
 <div class="toast-container" id="toasts"></div>
 
 <script>
   const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
+  let currentRole = 'professor';
+  let currentMode = 'login'; // 'login' | 'register'
 
-  function switchTab(role) {
-    document.getElementById('form-professor').style.display = role === 'professor' ? '' : 'none';
-    document.getElementById('form-aluno').style.display = role === 'aluno' ? '' : 'none';
+  // ── Tab role ──────────────────────────────────────────────────────────────
+  function switchRole(role) {
+    currentRole = role;
+    document.getElementById('panel-professor').style.display = role === 'professor' ? '' : 'none';
+    document.getElementById('panel-aluno').style.display     = role === 'aluno'     ? '' : 'none';
     document.getElementById('tab-professor').classList.toggle('active', role === 'professor');
     document.getElementById('tab-aluno').classList.toggle('active', role === 'aluno');
     document.getElementById('tab-professor').setAttribute('aria-selected', role === 'professor');
     document.getElementById('tab-aluno').setAttribute('aria-selected', role === 'aluno');
   }
 
+  // ── Toggle login / register ───────────────────────────────────────────────
+  function switchMode(mode) {
+    currentMode = mode;
+    document.getElementById('prof-login').style.display    = mode === 'login'    ? '' : 'none';
+    document.getElementById('prof-register').style.display = mode === 'register' ? '' : 'none';
+    document.getElementById('left-title').innerHTML = mode === 'register'
+      ? 'Crie sua conta e<br>comece a <span class="accent">organizar tudo</span>'
+      : 'Profissional de verdade<br>usa <span class="accent">ferramenta certa</span>';
+    document.getElementById('left-desc').textContent = mode === 'register'
+      ? 'Cadastro gratuito, sem cartão de crédito. Em 2 minutos você já tem sua agenda funcionando.'
+      : 'Agenda, alunos, pagamentos e evolução — tudo integrado. Foque no treino, a gestão a gente resolve.';
+  }
+
+  // ── Login ─────────────────────────────────────────────────────────────────
   async function handleLogin(e, role) {
     e.preventDefault();
-    const btn = document.getElementById('btn-login-' + (role === 'professor' ? 'prof' : role));
-    btn.disabled = true;
-    btn.textContent = 'Entrando...';
+    const btnId = role === 'professor' ? 'btn-login-prof' : 'btn-login-aluno';
+    const emailId = role === 'professor' ? 'pl-email' : 'al-email';
+    const senhaId = role === 'professor' ? 'pl-senha' : 'al-senha';
+    const btn = document.getElementById(btnId);
+    setLoading(btn, true, 'Entrando...');
     try {
-      const form = e.target;
       const res = await fetch(`${WORKER}/api/auth/login`, {
-        method: 'POST',
-        credentials: 'include',
+        method: 'POST', credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: form.email.value, senha: form.senha.value, role })
+        body: JSON.stringify({
+          email: document.getElementById(emailId).value.trim(),
+          senha: document.getElementById(senhaId).value,
+          role
+        })
       });
       if (res.ok) {
-        window.location.href = role === 'professor' ? 'professor/dashboard.html' : 'aluno/dashboard.html';
+        toast('Bem-vindo! Redirecionando...', 'success');
+        setTimeout(() => {
+          window.location.href = role === 'professor' ? 'professor/dashboard.html' : 'aluno/dashboard.html';
+        }, 600);
       } else {
-        toast('E-mail ou senha incorretos.', 'error');
-        btn.disabled = false;
-        btn.textContent = role === 'professor' ? 'Entrar como Professor' : 'Entrar como Aluno';
+        const d = await res.json().catch(() => ({}));
+        toast(d.error || 'E-mail ou senha incorretos.', 'error');
+        setLoading(btn, false, 'Entrar');
       }
     } catch {
-      window.location.href = role === 'professor' ? 'professor/dashboard.html' : 'aluno/dashboard.html';
+      toast('Erro de conexão. Tente novamente.', 'error');
+      setLoading(btn, false, 'Entrar');
     }
   }
 
-  function loginWithGoogle(role) {
-    window.location.href = `${WORKER}/login?role=${role}`;
+  // ── Registro ──────────────────────────────────────────────────────────────
+  async function handleRegister(e) {
+    e.preventDefault();
+    const nome  = document.getElementById('pr-nome').value.trim();
+    const email = document.getElementById('pr-email').value.trim();
+    const senha = document.getElementById('pr-senha').value;
+    const cref  = document.getElementById('pr-cref').value.trim();
+
+    if (senha.length < 8) { toast('A senha deve ter pelo menos 8 caracteres.', 'error'); return; }
+
+    const btn = document.getElementById('btn-register-prof');
+    setLoading(btn, true, 'Criando conta...');
+
+    try {
+      const res = await fetch(`${WORKER}/api/auth/register`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: nome, email, senha, cref: cref || undefined })
+      });
+      const d = await res.json().catch(() => ({}));
+      if (res.ok) {
+        toast('Conta criada! Redirecionando...', 'success');
+        setTimeout(() => { window.location.href = 'professor/dashboard.html'; }, 800);
+      } else if (res.status === 409) {
+        toast('Este e-mail já está cadastrado. Tente entrar.', 'error');
+        setLoading(btn, false, 'Criar minha conta');
+        switchMode('login');
+        document.getElementById('pl-email').value = email;
+      } else {
+        toast(d.error || 'Erro ao criar conta. Tente novamente.', 'error');
+        setLoading(btn, false, 'Criar minha conta');
+      }
+    } catch {
+      toast('Erro de conexão. Tente novamente.', 'error');
+      setLoading(btn, false, 'Criar minha conta');
+    }
+  }
+
+  // ── Força da senha ────────────────────────────────────────────────────────
+  function checkSenha(v) {
+    const bar   = document.getElementById('senha-bar');
+    const label = document.getElementById('senha-label');
+    let score = 0;
+    if (v.length >= 8)  score++;
+    if (v.length >= 12) score++;
+    if (/[A-Z]/.test(v)) score++;
+    if (/[0-9]/.test(v)) score++;
+    if (/[^A-Za-z0-9]/.test(v)) score++;
+    const map = [
+      { pct:'20%', cor:'var(--forte-danger)',  txt:'Muito fraca' },
+      { pct:'40%', cor:'var(--forte-danger)',  txt:'Fraca' },
+      { pct:'60%', cor:'#F59E0B',             txt:'Razoável' },
+      { pct:'80%', cor:'#10B981',             txt:'Boa' },
+      { pct:'100%',cor:'var(--forte-accent)', txt:'Excelente 💪' },
+    ];
+    const s = map[Math.max(0, score - 1)] || map[0];
+    bar.style.width   = v.length ? s.pct  : '0%';
+    bar.style.background = s.cor;
+    label.textContent = v.length ? s.txt : '';
+  }
+
+  // ── Mostrar/ocultar senha ─────────────────────────────────────────────────
+  function toggleSenha(id, btn) {
+    const inp = document.getElementById(id);
+    inp.type  = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function setLoading(btn, loading, text) {
+    btn.disabled = loading;
+    btn.textContent = text;
+    if (loading) btn.style.opacity = '0.7';
+    else btn.style.opacity = '';
   }
 
   function toast(msg, type = 'success') {
@@ -185,20 +304,20 @@
     el.className = `toast ${type}`;
     el.textContent = msg;
     document.getElementById('toasts').appendChild(el);
-    setTimeout(() => el.remove(), 4000);
+    setTimeout(() => el.remove(), 4500);
   }
 
-  const btnAC = document.getElementById('btn-alto-contraste');
-  btnAC.addEventListener('click', () => {
+  // ── Init ──────────────────────────────────────────────────────────────────
+  document.getElementById('btn-alto-contraste').addEventListener('click', () => {
     document.body.classList.toggle('theme-alto-contraste');
     localStorage.setItem('forte-tema', document.body.className);
   });
-
   const saved = localStorage.getItem('forte-tema');
   if (saved) document.body.className = saved;
 
   const params = new URLSearchParams(location.search);
-  if (params.get('role') === 'aluno') switchTab('aluno');
+  if (params.get('role') === 'aluno') switchRole('aluno');
+  if (params.get('mode') === 'register') switchMode('register');
 </script>
 
 </body>
