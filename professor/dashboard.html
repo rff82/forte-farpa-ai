@@ -76,7 +76,7 @@
   <div class="main-content">
     <header class="topbar">
       <div class="topbar-left">
-        <span class="page-title" id="greeting">Bom dia! 👋</span>
+        <span class="page-title" id="greeting">Bom dia</span>
         <span class="page-subtitle" id="today-date"></span>
       </div>
       <div class="topbar-right">
@@ -314,7 +314,7 @@
   // Saudação por hora
   const h = new Date().getHours();
   document.getElementById('greeting').textContent =
-    (h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite') + '! 👋';
+    (h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite');
 
   document.getElementById('today-date').textContent =
     new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });

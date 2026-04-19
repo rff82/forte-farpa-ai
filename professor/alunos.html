@@ -89,7 +89,7 @@
       <!-- Tabela -->
       <div class="card">
         <div class="card-body-flush">
-          <table class="forte-table" id="tabela-alunos">
+          <table class="forte-table forte-table-responsive" id="tabela-alunos">
             <thead>
               <tr>
                 <th>Aluno</th>
@@ -255,7 +255,7 @@
     }
     tbody.innerHTML = alunos.map(a => `
       <tr>
-        <td>
+        <td data-label="Aluno">
           <div class="td-name">
             <div class="avatar">${initials(a.name)}</div>
             <div>
@@ -264,13 +264,13 @@
             </div>
           </div>
         </td>
-        <td style="color:var(--forte-text-secondary);">${a.objective || '—'}</td>
-        <td><span class="badge badge-blue">${planLabel(a.plan_type)}</span></td>
-        <td style="text-align:center;font-family:var(--font-mono);">${a.sessions_per_week}x/sem</td>
-        <td style="font-family:var(--font-mono);font-weight:700;">R$ ${Number(a.plan_value||0).toFixed(0)}</td>
-        <td><span class="badge ${statusBadge(a.status)}">${a.status}</span></td>
-        <td><span class="badge ${pagBadge(a.payment_status)}">${a.payment_status || 'pendente'}</span></td>
-        <td>
+        <td data-label="Objetivo" style="color:var(--forte-text-secondary);">${a.objective || '—'}</td>
+        <td data-label="Plano"><span class="badge badge-blue">${planLabel(a.plan_type)}</span></td>
+        <td data-label="Sessões/sem" style="text-align:center;font-family:var(--font-mono);">${a.sessions_per_week}x/sem</td>
+        <td data-label="Valor" style="font-family:var(--font-mono);font-weight:700;">R$ ${Number(a.plan_value||0).toFixed(0)}</td>
+        <td data-label="Status"><span class="badge ${statusBadge(a.status)}">${a.status}</span></td>
+        <td data-label="Pagamento"><span class="badge ${pagBadge(a.payment_status)}">${a.payment_status || 'pendente'}</span></td>
+        <td data-label="Ações">
           <div style="display:flex;gap:var(--space-2);">
             <button class="btn btn-ghost btn-icon btn-sm" onclick="editAluno('${a.id}')" title="Editar"><span data-icon="edit"></span></button>
             <button class="btn btn-ghost btn-icon btn-sm" onclick="viewAluno('${a.id}')" title="Ver ficha"><span data-icon="eye"></span></button>

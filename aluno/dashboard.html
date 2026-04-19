@@ -73,7 +73,7 @@
           <div class="nsc-title" id="nsc-title">—</div>
           <div class="nsc-meta" id="nsc-meta">—</div>
           <div class="nsc-actions">
-            <button class="btn btn-primary btn-sm" id="btn-confirmar">✓ Confirmar presença</button>
+            <button class="btn btn-primary btn-sm" id="btn-confirmar"><span data-icon="check"></span> Confirmar presença</button>
             <button class="btn btn-secondary btn-sm" onclick="toast('Em desenvolvimento','success')">Cancelar</button>
           </div>
         </div>
@@ -91,6 +91,24 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- Semana em um relance -->
+      <div class="card" style="margin-bottom:var(--space-5);">
+        <div class="card-header">
+          <span class="card-title"><span data-icon="activity"></span> Minha semana</span>
+          <span style="font-size:var(--text-xs);color:var(--forte-text-muted);font-family:var(--font-mono);" id="week-range">—</span>
+        </div>
+        <div class="card-body">
+          <div class="week-plan" id="week-plan">
+            <!-- preenchido por JS -->
+          </div>
+          <div style="display:flex;gap:var(--space-4);margin-top:var(--space-4);font-size:0.68rem;color:var(--forte-text-muted);flex-wrap:wrap;">
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;background:var(--forte-accent);border-radius:3px;"></span> Realizada</span>
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border:1.5px solid var(--forte-accent);background:var(--forte-accent-light);border-radius:3px;"></span> Agendada</span>
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border:1.5px solid var(--forte-border);border-radius:3px;"></span> Descanso</span>
+          </div>
+        </div>
       </div>
 
       <!-- Stats -->
@@ -254,8 +272,49 @@
   const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
 
   const h = new Date().getHours();
-  document.getElementById('greeting').textContent = (h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite') + '! 💪';
+  document.getElementById('greeting').textContent = (h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite') + '!';
   document.getElementById('today-date').textContent = new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+
+  // ── Semana atual (7 dias Seg→Dom) ─────────────────────────────────────────
+  function renderSemana(sessoesRealizadas = [], sessoesAgendadas = []) {
+    const wrap = document.getElementById('week-plan');
+    if (!wrap) return;
+    const labels = ['S','T','Q','Q','S','S','D'];
+    const today = new Date(); today.setHours(0,0,0,0);
+    const dow = today.getDay();
+    const mondayOffset = dow === 0 ? -6 : 1 - dow;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + mondayOffset);
+
+    const setTs = new Set(sessoesRealizadas.map(ts => {
+      const d = new Date(ts * 1000); d.setHours(0,0,0,0);
+      return d.getTime();
+    }));
+    const setAg = new Set(sessoesAgendadas.map(ts => {
+      const d = new Date(ts * 1000); d.setHours(0,0,0,0);
+      return d.getTime();
+    }));
+
+    const html = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday); d.setDate(monday.getDate() + i);
+      const t = d.getTime();
+      const isToday = t === today.getTime();
+      let state = 'rest';
+      if (setTs.has(t)) state = 'done';
+      else if (setAg.has(t)) state = 'scheduled';
+      html.push(`<div class="week-day ${state} ${isToday?'today':''}" title="${d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'short'})}">
+        <span class="week-day-label">${labels[i]}</span>
+        <span class="week-day-num">${d.getDate()}</span>
+      </div>`);
+    }
+    wrap.innerHTML = html.join('');
+
+    const fmt = dt => dt.toLocaleDateString('pt-BR',{day:'numeric',month:'short'});
+    const end = new Date(monday); end.setDate(monday.getDate()+6);
+    const rangeEl = document.getElementById('week-range');
+    if (rangeEl) rangeEl.textContent = `${fmt(monday)} – ${fmt(end)}`;
+  }
 
   const MOCK_PLAN = {
     name: 'Programa Força + Definição',
@@ -352,12 +411,17 @@
     document.getElementById('pag-icon').style.color = 'var(--forte-success)';
 
     renderPlano(MOCK_PLAN);
+    const now = Math.floor(Date.now()/1000);
     renderHistorico([
-      { scheduled_at: Date.now()/1000 - 86400,   status:'realizada', duration_min:60, notes:'Treino A' },
-      { scheduled_at: Date.now()/1000 - 86400*3, status:'realizada', duration_min:60, notes:'Treino C' },
-      { scheduled_at: Date.now()/1000 - 86400*5, status:'realizada', duration_min:60, notes:'Treino B' },
-      { scheduled_at: Date.now()/1000 - 86400*7, status:'falta',     duration_min:60, notes:'Treino A' },
+      { scheduled_at: now - 86400,   status:'realizada', duration_min:60, notes:'Treino A' },
+      { scheduled_at: now - 86400*3, status:'realizada', duration_min:60, notes:'Treino C' },
+      { scheduled_at: now - 86400*5, status:'realizada', duration_min:60, notes:'Treino B' },
+      { scheduled_at: now - 86400*7, status:'falta',     duration_min:60, notes:'Treino A' },
     ]);
+    renderSemana(
+      [now - 86400, now - 86400*3, now - 86400*5],
+      [now + 86400, now + 86400*3]
+    );
   }
 
   function renderPlano(plan) {

@@ -56,17 +56,29 @@
         <span class="page-subtitle" id="evolucao-period">últimos 3 meses</span>
       </div>
       <div class="topbar-right">
-        <select class="form-input" id="period-select" onchange="updateCharts()" style="width:auto;font-size:var(--text-sm);">
-          <option value="3">Últimos 3 meses</option>
-          <option value="6">Últimos 6 meses</option>
-          <option value="12">Último ano</option>
-        </select>
         <button id="btn-alto-contraste" aria-label="Ativar alto contraste"><span data-icon="contrast"></span> Contraste</button>
         <button class="btn btn-primary btn-sm" onclick="openModal()">+ Nova Medição</button>
       </div>
     </header>
 
     <div class="page-content">
+
+      <!-- Range pills: período de análise -->
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-3);">
+        <div class="range-pills" role="tablist" aria-label="Período">
+          <button class="range-pill" data-months="1" onclick="setRange(this,1)">30D</button>
+          <button class="range-pill active" data-months="3" onclick="setRange(this,3)">3M</button>
+          <button class="range-pill" data-months="6" onclick="setRange(this,6)">6M</button>
+          <button class="range-pill" data-months="12" onclick="setRange(this,12)">1A</button>
+          <button class="range-pill" data-months="0" onclick="setRange(this,0)">Tudo</button>
+        </div>
+      </div>
+
+      <!-- PR strip: conquistas recentes (Cyber Lime — celebração) -->
+      <div class="pr-strip" id="pr-strip" style="display:none;">
+        <div class="pr-strip-label"><span data-icon="trophy"></span> Conquistas neste período</div>
+        <div class="pr-chips" id="pr-chips"></div>
+      </div>
 
       <!-- Métricas atuais -->
       <div class="metrics-grid">
@@ -265,15 +277,77 @@
 
   function mts(y,m,d) { return Math.floor(new Date(y,m,d).getTime()/1000); }
 
+  let allMedicoes = [];
+  let currentRangeMonths = 3;
+
   async function loadEvolucao() {
-    let medicoes;
     try {
       const res = await fetch(`${WORKER}/api/student/measurements`, { credentials:'include' });
       if (res.status === 401) { window.location.href = '../login.html'; return; }
-      medicoes = await res.json();
-    } catch { medicoes = MOCK_MEDICOES; }
-    renderTabela(medicoes);
-    renderCharts(medicoes);
+      allMedicoes = await res.json();
+      if (!Array.isArray(allMedicoes) || !allMedicoes.length) allMedicoes = MOCK_MEDICOES;
+    } catch { allMedicoes = MOCK_MEDICOES; }
+    applyRange();
+  }
+
+  function filterByRange(list, months) {
+    if (!months) return list;
+    const cutoff = Math.floor(Date.now()/1000) - (months * 30 * 86400);
+    return list.filter(m => m.measured_at >= cutoff);
+  }
+
+  function setRange(btn, months) {
+    currentRangeMonths = months;
+    document.querySelectorAll('.range-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyRange();
+  }
+
+  function applyRange() {
+    const filtered = filterByRange(allMedicoes, currentRangeMonths).sort((a,b) => a.measured_at - b.measured_at);
+    const data = filtered.length >= 2 ? filtered : allMedicoes;
+    renderTabela(data);
+    renderCharts(data);
+    renderPRs(data);
+    const periodEl = document.getElementById('evolucao-period');
+    if (periodEl) {
+      const labels = { 1:'últimos 30 dias', 3:'últimos 3 meses', 6:'últimos 6 meses', 12:'último ano', 0:'histórico completo' };
+      periodEl.textContent = labels[currentRangeMonths] || '';
+    }
+  }
+
+  function renderPRs(list) {
+    const strip = document.getElementById('pr-strip');
+    const chips = document.getElementById('pr-chips');
+    if (!strip || !chips || list.length < 2) { if (strip) strip.style.display = 'none'; return; }
+    const first = list[0], last = list[list.length - 1];
+    const prs = [];
+    const fmt = (v, unit, invert) => {
+      if (v == null || isNaN(v)) return null;
+      const arrow = (invert ? v < 0 : v > 0) ? '▲' : (v === 0 ? '•' : '▼');
+      const sign  = v > 0 ? '+' : '';
+      return `${arrow} ${sign}${v.toFixed(1)}${unit}`;
+    };
+    if (first.weight_kg != null && last.weight_kg != null) {
+      const delta = last.weight_kg - first.weight_kg;
+      if (Math.abs(delta) >= 0.5) prs.push({ label: 'Peso', value: fmt(delta, 'kg', false) });
+    }
+    if (first.body_fat_pct != null && last.body_fat_pct != null) {
+      const delta = last.body_fat_pct - first.body_fat_pct;
+      if (Math.abs(delta) >= 0.5) prs.push({ label: '% Gordura', value: fmt(delta, '%', false) });
+    }
+    if (first.waist_cm != null && last.waist_cm != null) {
+      const delta = last.waist_cm - first.waist_cm;
+      if (Math.abs(delta) >= 1) prs.push({ label: 'Cintura', value: fmt(delta, 'cm', false) });
+    }
+    if (first.bicep_cm != null && last.bicep_cm != null) {
+      const delta = last.bicep_cm - first.bicep_cm;
+      if (Math.abs(delta) >= 0.5) prs.push({ label: 'Bícep', value: fmt(delta, 'cm', true) });
+    }
+    prs.push({ label: 'Medições', value: `${list.length} registros` });
+    if (!prs.length) { strip.style.display = 'none'; return; }
+    strip.style.display = '';
+    chips.innerHTML = prs.map(p => `<span class="pr-chip">${p.label}: ${p.value}</span>`).join('');
   }
 
   function renderTabela(m) {
