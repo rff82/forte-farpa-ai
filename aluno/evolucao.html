@@ -6,7 +6,7 @@
   <title>Minha Evolução — farpa Forte</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../tokens.css">
   <link rel="stylesheet" href="../themes.css">
   <link rel="stylesheet" href="../components.css">
@@ -128,8 +128,8 @@
               <svg id="chart-peso" viewBox="0 0 400 160" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="grad-peso" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#F97316" stop-opacity="0.3"/>
-                    <stop offset="100%" stop-color="#F97316" stop-opacity="0"/>
+                    <stop offset="0%" stop-color="#1A2B4C" stop-opacity="0.2"/>
+                    <stop offset="100%" stop-color="#1A2B4C" stop-opacity="0"/>
                   </linearGradient>
                 </defs>
                 <!-- gerado por JS -->
@@ -372,7 +372,8 @@
 
   function renderCharts(medicoes) {
     if (medicoes.length < 2) return;
-    drawLineChart('chart-peso',   'peso-labels',   'grad-peso',    medicoes.map(m=>m.weight_kg),    '#F97316', 'kg');
+    const primaryColor = getComputedStyle(document.body).getPropertyValue('--forte-primary').trim() || '#1A2B4C';
+    drawLineChart('chart-peso',   'peso-labels',   'grad-peso',    medicoes.map(m=>m.weight_kg),    primaryColor, 'kg');
     drawLineChart('chart-gordura','gordura-labels','grad-gordura', medicoes.map(m=>m.body_fat_pct), '#10B981', '%');
     document.getElementById('peso-range').textContent    = `${Math.min(...medicoes.map(m=>m.weight_kg))} – ${Math.max(...medicoes.map(m=>m.weight_kg))} kg`;
     document.getElementById('gordura-range').textContent = `${Math.min(...medicoes.map(m=>m.body_fat_pct))} – ${Math.max(...medicoes.map(m=>m.body_fat_pct))}%`;

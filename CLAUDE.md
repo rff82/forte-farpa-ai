@@ -1,5 +1,5 @@
 # CLAUDE.md — farpa Forte
-> Arquivo de contexto automático · rff82/forte-farpa-ai · v1.2 · 2026-04-18
+> Arquivo de contexto automático · rff82/forte-farpa-ai · v2.0 · 2026-04-19 · **PIVÔ Editorial Navy Performance**
 
 ---
 
@@ -12,23 +12,35 @@
 
 ---
 
-## DESIGN SYSTEM — paleta on-trend da categoria
+## DESIGN SYSTEM — Editorial Navy Performance (pivô 2026-04-19)
 
-Veredito da pesquisa obrigatória (WGSN A/W 25–26 + Mobbin + Dribbble 2026) registrado em `farpa-reengenharia/02-design-system/05-trend-research.md`:
+Veredito pós-iteração no Google Stitch (projeto `10669266773153741819`). Registro do pivô em `farpa-reengenharia/02-design-system/05-trend-research.md` §"Pivô forte 2026-04-19".
 
 ```
-Primary (superfície):  #0A0B0D  (Woodsmoke / near-black) — dark-first cinematic
-Accent principal:      #F97316  (orange, Strava-like)
-Accent secundário:     #A3E635  (Cyber Lime — WGSN 2026) para PRs/streaks
-Warm light:            #F5F0EB  (Cloud Dancer — quiet luxury, conteúdo editorial)
-Brand mestre farpa:    #4338CA  (índigo) — usar APENAS em gráficos secundários, nunca como primary
-Fonts:                 Plus Jakarta Sans + JetBrains Mono (imutáveis)
-Tema padrão:           Escuro (class="theme-escuro" no body)
+Primary:         #1A2B4C  (Deep Navy — herdado do logo FARPA gerado)
+Primary hover:   #102038
+Secondary:       #F97316  (Strava orange — reservada p/ dark/alto-contraste)
+Success/PR:      #22C55E  (emerald — substitui Cyber Lime no light mode)
+Background:      #FFFFFF  (light-first editorial)
+Surface:         #F8FAFC
+Surface variant: #F1F5F9
+Border:          #E2E8F0
+Text primary:    #1A2B4C
+Text secondary:  #475569
+Text muted:      #94A3B8
+Fonts:           Lexend + JetBrains Mono (imutáveis a partir deste pivô)
+Tema padrão:     LIGHT
+Alto contraste:  DARK #0A0B0D com primary = #F97316 (toggle via #btn-alto-contraste)
+Radius:          ROUND_FOUR (4px base, 6 lg, 8 xl) — editorial architectural
 ```
 
-**Por que dark + orange:** Peloton (Woodsmoke+Cardinal), Whoop (#0B0B0B+#FF0100) e Hevy consolidaram dark cinematic como padrão fitness atlético. Strava usa International Orange #FC4C02 como assinatura. Índigo genérico de SaaS B2B não carrega energia física.
+**Por que o pivô:** pesquisa anterior (Peloton/WHOOP dark) foi superada pela direção "Performance Editorial" — tipografia Lexend, cantos de 4px, navy corporativo com orange reservado para momentos de celebração (alto contraste/dark mode). A paleta ecoa diretamente o logo FARPA em Deep Navy Blue.
 
-**Fontes da pesquisa:** [Peloton Mobbin](https://mobbin.com/colors/brand/peloton) · [Strava Mobbin](https://mobbin.com/colors/brand/strava) · [WHOOP Mobbin](https://mobbin.com/colors/brand/whoop) · [WGSN Key Colours 26/27](https://www.wgsn.com/en/blog/key-colours-w-26-27) · [WGSN Colour of the Year 2026 — Transformative Teal](https://mr-mag.com/wgsn-and-coloro-announce-colour-of-the-year-2026-transformative-teal-and-the-key-colours-for-a-w-26-27/).
+**Compatibilidade com regras mestre do ecossistema:**
+- Regra global 7 (trend per category) — pesquisa revisada e registrada no laboratório
+- Regra global 8 (alto contraste é toggle secundário) — **mantida**: light é padrão, dark é toggle
+- Regra anterior "nunca índigo como primary aqui" — **removida neste pivô**, navy vira primary; orange vira secondary
+- Tokens compartilhados (`tokens.css`/`themes.css`) continuam intocados; overrides ficam em `forte.css`
 
 Ordem de carregamento obrigatória:
 ```html
@@ -86,16 +98,17 @@ Auth:          OAuth2/OIDC via admin.farpa.ai (IdP centralizado)
 
 ## REGRAS INEGOCIÁVEIS
 
-- **Alto contraste é toggle SECUNDÁRIO**, sempre no header (`#btn-alto-contraste` → `.theme-alto-contraste`). NÃO é o tema padrão. Tema padrão = dark cinematic on-trend (regra mestre do ecossistema).
-- **Paleta on-trend fitness** — dark `#0A0B0D` + accent orange `#F97316`. Nunca índigo como primary aqui.
-- **WCAG AA mínimo** — Rodrigo tem baixa visão, é requisito de existência. Contraste texto ≥ 4.5:1.
+- **Tema padrão = LIGHT** com navy primary (#1A2B4C). Alto contraste é toggle SECUNDÁRIO que ativa o modo DARK (#0A0B0D + orange primary). Classe no body: `.theme-alto-contraste`.
+- **Paleta Editorial Navy** — navy #1A2B4C primary + orange #F97316 secondary. Orange só aparece em dark/alto-contraste e highlights sutis.
+- **WCAG AA mínimo** — Rodrigo tem baixa visão, é requisito de existência. Contraste texto ≥ 4.5:1. Light mode: navy sobre branco dá 12.5:1; dark mode: orange sobre #0A0B0D dá 8.9:1.
 - **API keys nunca no cliente** — sempre `wrangler secret put`.
-- **Cores nunca hardcoded** — sempre `var(--forte-xxx)` ou `var(--token)`.
-- **Tipografia imutável** — Plus Jakarta Sans + JetBrains Mono.
+- **Cores nunca hardcoded** — sempre `var(--forte-xxx)` ou `var(--token)`. Usar `--forte-primary` (navy) ou `--forte-secondary` (orange) conforme papel.
+- **Tipografia imutável pós-pivô** — Lexend (ui + display) + JetBrains Mono (numerais/datas). NÃO voltar para Plus Jakarta Sans.
+- **Radius editorial** — 4px base (`--radius-md`), 6px lg, 8px xl, 12px 2xl. Override em `forte.css :root`.
 - **Nunca modificar** arquivos sincronizados de `shared/` neste repo; editar na raiz e re-sincronizar.
 - **Auth cross-site** — cookie de sessão `forte_sid` emitido como `HttpOnly; Secure; SameSite=None; Partitioned; Path=/`. `SameSite=Lax` quebra login (incidente 2026-04-18). Helper `sessionCookie()` + `clearSessionCookie()` em `workers/forte-worker/src/index.ts`.
-- **Logo unificado** — `<div class="farpa-logo">` com `--logo-mark-bg: var(--forte-accent)`. Nunca SVG próprio.
-- **Ícones SVG line (Lucide)** via `<span data-icon="nome"></span>` + `icons.js`. Nunca emojis em UI funcional.
+- **Logo unificado** — `<div class="farpa-logo">` com `--logo-mark-bg: var(--forte-accent)` (que aponta para navy primary no light, orange no dark). Nunca SVG próprio.
+- **Ícones SVG line (Lucide)** via `<span data-icon="nome"></span>` + `icons.js`. Nunca emojis em UI funcional (microcopy/toast OK).
 - **Sem números inventados** em landing — ou puxa de D1, ou não mostra (pitch honesto: Grátis / ~2min / Edge).
 - **Cloudflare Free Tier** — 100k Worker req/dia, D1 5M reads/100k writes.
 
