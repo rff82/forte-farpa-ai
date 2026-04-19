@@ -29,10 +29,11 @@
       <div class="nav-section">
         <span class="nav-section-label">Minha área</span>
         <a class="nav-item active" href="dashboard.html"><span class="nav-icon"><span data-icon="grid"></span></span> Início</a>
-        <a class="nav-item" href="#agenda"><span class="nav-icon"><span data-icon="calendar"></span></span> Minha Agenda</a>
+        <a class="nav-item" href="agenda.html"><span class="nav-icon"><span data-icon="calendar"></span></span> Minha Agenda</a>
         <a class="nav-item" href="evolucao.html"><span class="nav-icon"><span data-icon="trending-up"></span></span> Evolução</a>
         <a class="nav-item" href="#" onclick="openInsightsModal();return false;"><span class="nav-icon"><span data-icon="sparkles"></span></span> IA — Insights</a>
-        <a class="nav-item" href="#pagamentos"><span class="nav-icon"><span data-icon="credit-card"></span></span> Pagamentos</a>
+        <a class="nav-item" href="pagamentos.html"><span class="nav-icon"><span data-icon="credit-card"></span></span> Pagamentos</a>
+        <a class="nav-item nav-community" href="#comunidade" style="display:none;"><span class="nav-icon"><span data-icon="users"></span></span> Comunidade</a>
         <a class="nav-item" href="#treino"><span class="nav-icon"><span data-icon="dumbbell"></span></span> Meu Treino</a>
       </div>
       <div class="nav-section">
@@ -58,6 +59,7 @@
         <span class="page-subtitle" id="today-date"></span>
       </div>
       <div class="topbar-right">
+        <select id="lang-select" aria-label="Idioma / Language"><option value="pt-BR">PT-BR</option><option value="en">EN</option></select>
         <button id="btn-alto-contraste" aria-label="Ativar alto contraste"><span data-icon="contrast"></span> Contraste</button>
       </div>
     </header>
@@ -266,8 +268,29 @@
 
 <div class="toast-container" id="toasts"></div>
 
+<footer class="app-disclaimer" role="contentinfo">
+  <span data-i18n="disclaimer.ia">As sugestões de treino geradas por IA são rascunhos orientativos revisados e aprovados pelo seu Personal Trainer credenciado (CREF). Não substituem avaliação presencial, anamnese completa nem prescrição profissional. Em caso de dúvida, consulte seu profissional de saúde.</span>
+</footer>
+
 <script src="../icons.js"></script>
 <script src="../theme-engine.js"></script>
+<script src="../i18n.js"></script>
+<script>
+  // E11 modo simples · E7 comunidade opt-in
+  (async () => {
+    try {
+      const r = await fetch('https://forte-worker.rfelipefernandes.workers.dev/api/student/dashboard', { credentials:'include' });
+      if (!r.ok) return;
+      const d = await r.json();
+      if (d.profile?.onboarding_mode === 'simple') {
+        document.body.classList.add('modo-simples');
+      }
+      if (d.profile?.community_opt_in === 1) {
+        document.querySelectorAll('.nav-community').forEach(el => el.style.display = '');
+      }
+    } catch {}
+  })();
+</script>
 <script>
   const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
 

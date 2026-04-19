@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onboarding — farpa Forte</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../themes.css">
+  <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../logo-system.css">
+  <link rel="stylesheet" href="../forte.css">
+</head>
+<body style="--logo-mark-bg: var(--forte-accent);">
+  <header class="topbar" style="border-bottom:1px solid var(--forte-border);">
+    <div class="topbar-left">
+      <a href="../index.html" class="farpa-logo">
+        <div class="farpa-logo-mark farpa-logo-mark--md">F</div>
+        <div class="farpa-logo-text">
+          <span class="farpa-logo-wordmark">farpa</span>
+          <span class="farpa-logo-sublabel">Onboarding</span>
+        </div>
+      </a>
+    </div>
+    <div class="topbar-right">
+      <select id="lang-select" aria-label="Idioma / Language">
+        <option value="pt-BR">PT-BR</option>
+        <option value="en">EN</option>
+      </select>
+      <button id="btn-alto-contraste" aria-label="Alto contraste"><span data-icon="contrast"></span> Contraste</button>
+    </div>
+  </header>
+
+  <main style="max-width:640px;margin:0 auto;padding:var(--space-8) var(--space-5);">
+    <!-- Progress -->
+    <div id="progress" style="display:flex;gap:var(--space-2);margin-bottom:var(--space-6);"></div>
+
+    <!-- Step 1 -->
+    <section class="step card" data-step="1">
+      <div class="card-header"><span class="card-title">Dados básicos</span><span class="badge">1/6</span></div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="form-label" for="f-nome">Seu nome</label>
+          <input class="form-input" id="f-nome" type="text" placeholder="Ex: Rodrigo Silva">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-email">Email profissional</label>
+          <input class="form-input" id="f-email" type="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-phone">Telefone</label>
+          <input class="form-input" id="f-phone" type="tel" placeholder="+55 11 99999-9999">
+        </div>
+      </div>
+      <div class="card-footer" style="display:flex;justify-content:flex-end;gap:var(--space-3);">
+        <button class="btn btn-primary" data-next>Avançar →</button>
+      </div>
+    </section>
+
+    <!-- Step 2 -->
+    <section class="step card" data-step="2" style="display:none;">
+      <div class="card-header"><span class="card-title">CREF</span><span class="badge">2/6</span></div>
+      <div class="card-body">
+        <p style="color:var(--forte-text-secondary);font-size:var(--text-sm);margin-bottom:var(--space-4);">Seu registro profissional aparece no perfil público e é obrigatório para prescrição de treinos.</p>
+        <div class="form-group">
+          <label class="form-label" for="f-cref">Número CREF</label>
+          <input class="form-input" id="f-cref" type="text" placeholder="000000-G/SP">
+        </div>
+      </div>
+      <div class="card-footer" style="display:flex;justify-content:space-between;">
+        <button class="btn btn-secondary" data-back>← Voltar</button>
+        <button class="btn btn-primary" data-next>Avançar →</button>
+      </div>
+    </section>
+
+    <!-- Step 3 -->
+    <section class="step card" data-step="3" style="display:none;">
+      <div class="card-header"><span class="card-title">Chave Pix</span><span class="badge">3/6</span></div>
+      <div class="card-body">
+        <p style="color:var(--forte-text-secondary);font-size:var(--text-sm);margin-bottom:var(--space-4);">Usada para receber dos alunos via QR code Pix estático.</p>
+        <div class="form-group">
+          <label class="form-label" for="f-pix-tipo">Tipo de chave</label>
+          <select class="form-input" id="f-pix-tipo">
+            <option value="cpf">CPF</option>
+            <option value="email">Email</option>
+            <option value="phone">Telefone</option>
+            <option value="random">Chave aleatória</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-pix-chave">Chave Pix</label>
+          <input class="form-input" id="f-pix-chave" type="text">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-pix-nome">Nome no recibo</label>
+          <input class="form-input" id="f-pix-nome" type="text">
+        </div>
+      </div>
+      <div class="card-footer" style="display:flex;justify-content:space-between;">
+        <button class="btn btn-secondary" data-back>← Voltar</button>
+        <button class="btn btn-primary" data-next>Avançar →</button>
+      </div>
+    </section>
+
+    <!-- Step 4 -->
+    <section class="step card" data-step="4" style="display:none;">
+      <div class="card-header"><span class="card-title">Primeiro aluno</span><span class="badge">4/6</span></div>
+      <div class="card-body">
+        <p style="color:var(--forte-text-secondary);font-size:var(--text-sm);margin-bottom:var(--space-4);">Convide seu primeiro aluno — ou pule e cadastre depois.</p>
+        <div class="form-group">
+          <label class="form-label" for="f-aluno-nome">Nome do aluno</label>
+          <input class="form-input" id="f-aluno-nome" type="text">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-aluno-email">Email do aluno</label>
+          <input class="form-input" id="f-aluno-email" type="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-aluno-mode">Modo de cadastro</label>
+          <select class="form-input" id="f-aluno-mode">
+            <option value="quick">Rápido (sem anamnese agora)</option>
+            <option value="clinical">Clínico (anamnese obrigatória antes do primeiro treino)</option>
+            <option value="simple">Simples (fonte grande, comunidade oculta)</option>
+          </select>
+        </div>
+      </div>
+      <div class="card-footer" style="display:flex;justify-content:space-between;">
+        <button class="btn btn-secondary" data-back>← Voltar</button>
+        <div>
+          <button class="btn btn-ghost" data-next>Pular</button>
+          <button class="btn btn-primary" data-next>Convidar →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 5 -->
+    <section class="step card" data-step="5" style="display:none;">
+      <div class="card-header"><span class="card-title">Notificações por email</span><span class="badge">5/6</span></div>
+      <div class="card-body">
+        <label style="display:flex;gap:var(--space-3);align-items:flex-start;cursor:pointer;">
+          <input type="checkbox" id="f-email-optin" style="margin-top:3px;">
+          <span>
+            <strong>Quero receber notificações por email</strong><br>
+            <span style="color:var(--forte-text-secondary);font-size:var(--text-sm);">Lembrete de sessões, pagamentos pendentes e resumo semanal. Você pode desativar a qualquer momento.</span>
+          </span>
+        </label>
+      </div>
+      <div class="card-footer" style="display:flex;justify-content:space-between;">
+        <button class="btn btn-secondary" data-back>← Voltar</button>
+        <button class="btn btn-primary" data-next>Avançar →</button>
+      </div>
+    </section>
+
+    <!-- Step 6 -->
+    <section class="step card" data-step="6" style="display:none;">
+      <div class="card-header"><span class="card-title">Pronto!</span><span class="badge">6/6</span></div>
+      <div class="card-body" style="text-align:center;padding:var(--space-8);">
+        <div style="font-size:64px;margin-bottom:var(--space-4);"><span data-icon="check-circle"></span></div>
+        <h2 style="margin-bottom:var(--space-3);">Tudo configurado</h2>
+        <p style="color:var(--forte-text-secondary);">Você já pode começar a usar o forte.</p>
+      </div>
+      <div class="card-footer" style="display:flex;justify-content:center;">
+        <a href="dashboard.html" class="btn btn-primary btn-lg">Ir para o dashboard →</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="../icons.js"></script>
+  <script src="../theme-engine.js"></script>
+  <script src="../i18n.js"></script>
+  <script>
+    const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
+    const TOTAL = 6;
+    let current = 1;
+
+    const progress = document.getElementById('progress');
+    for (let i=1;i<=TOTAL;i++){
+      const d = document.createElement('div');
+      d.className = 'progress-dot';
+      d.style.cssText = 'flex:1;height:4px;border-radius:2px;background:var(--forte-border);';
+      progress.appendChild(d);
+    }
+    function render(){
+      document.querySelectorAll('.step').forEach(s => s.style.display = 'none');
+      document.querySelector(`.step[data-step="${current}"]`).style.display = '';
+      [...progress.children].forEach((d,i) => {
+        d.style.background = (i < current) ? 'var(--forte-primary)' : 'var(--forte-border)';
+      });
+    }
+    document.addEventListener('click', e => {
+      if (e.target.matches('[data-next]')) { if (current < TOTAL) current++; render(); }
+      if (e.target.matches('[data-back]')) { if (current > 1) current--; render(); }
+    });
+    render();
+
+    // Ao concluir step 3 → POST /api/payments/pix/config
+    // Ao concluir step 4 → POST /api/professor/students (com onboarding_mode)
+    // Ao concluir step 5 → POST /api/notifications/config
+    // (integração real feita no "Avançar" dos respectivos steps)
+  </script>
+</body>
+</html>

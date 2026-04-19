@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda — farpa Forte (Aluno)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../themes.css">
+  <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../logo-system.css">
+  <link rel="stylesheet" href="../forte.css">
+</head>
+<body style="--logo-mark-bg: var(--forte-accent);">
+  <header class="topbar" style="border-bottom:1px solid var(--forte-border);">
+    <div class="topbar-left">
+      <a href="dashboard.html" class="farpa-logo">
+        <div class="farpa-logo-mark farpa-logo-mark--md">F</div>
+        <div class="farpa-logo-text"><span class="farpa-logo-wordmark">farpa</span><span class="farpa-logo-sublabel">Aluno</span></div>
+      </a>
+    </div>
+    <div class="topbar-right">
+      <select id="lang-select" aria-label="Idioma"><option value="pt-BR">PT-BR</option><option value="en">EN</option></select>
+      <button id="btn-alto-contraste" aria-label="Alto contraste"><span data-icon="contrast"></span> Contraste</button>
+    </div>
+  </header>
+
+  <main class="page-content" style="max-width:900px;margin:0 auto;padding:var(--space-6) var(--space-5);">
+    <h1 style="font-size:var(--text-3xl);margin-bottom:var(--space-5);">Agenda</h1>
+
+    <section class="card">
+      <div class="card-header"><span class="card-title">Horários disponíveis do professor</span></div>
+      <div class="card-body" id="slots-list">
+        <div class="empty-state"><div class="empty-title">Nenhum slot ainda</div><div class="empty-desc">Seu professor ainda não abriu horários.</div></div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:var(--space-5);">
+      <div class="card-header"><span class="card-title">Pedir horário fora do slot</span></div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="form-label" for="req-datetime">Data e hora desejada</label>
+          <input class="form-input" id="req-datetime" type="datetime-local">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="req-motivo">Motivo / observação</label>
+          <textarea class="form-input" id="req-motivo" rows="2"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="pedirHorario()">Enviar pedido</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="../icons.js"></script>
+  <script src="../theme-engine.js"></script>
+  <script src="../i18n.js"></script>
+  <script>
+    const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
+    async function loadSlots(){
+      try {
+        const r = await fetch(`${WORKER}/api/student/agenda/slots`, { credentials:'include' });
+        if (r.status === 401) { location.href = '../login.html'; return; }
+        const slots = await r.json();
+        if (!slots.length) return;
+        document.getElementById('slots-list').innerHTML = slots.map(s => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--space-3) 0;border-bottom:1px solid var(--forte-border);">
+            <div>
+              <div style="font-weight:600;">${new Date(s.scheduled_at*1000).toLocaleString('pt-BR')}</div>
+              <div style="font-size:var(--text-xs);color:var(--forte-text-muted);">${s.duration_min} min</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="reservar('${s.id}')">Reservar</button>
+          </div>`).join('');
+      } catch {}
+    }
+    async function reservar(slotId){
+      await fetch(`${WORKER}/api/student/agenda/reserve`, {
+        method:'POST', credentials:'include',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ slot_id: slotId })
+      });
+      loadSlots();
+    }
+    async function pedirHorario(){
+      const dt = document.getElementById('req-datetime').value;
+      const motivo = document.getElementById('req-motivo').value;
+      if (!dt) return;
+      await fetch(`${WORKER}/api/student/agenda/request`, {
+        method:'POST', credentials:'include',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ scheduled_at: Math.floor(new Date(dt).getTime()/1000), notes: motivo })
+      });
+      alert('Pedido enviado ao professor.');
+    }
+    loadSlots();
+  </script>
+  <footer class="app-disclaimer" role="contentinfo">
+    <span data-i18n="disclaimer.ia">As sugestões de treino geradas por IA são rascunhos orientativos revisados e aprovados pelo seu Personal Trainer credenciado (CREF). Não substituem avaliação presencial, anamnese completa nem prescrição profissional. Em caso de dúvida, consulte seu profissional de saúde.</span>
+  </footer>
+</body>
+</html>

@@ -1,5 +1,36 @@
 # CLAUDE.md — farpa Forte
-> Arquivo de contexto automático · rff82/forte-farpa-ai · v2.0 · 2026-04-19 · **PIVÔ Editorial Navy Performance**
+> Arquivo de contexto automático · rff82/forte-farpa-ai · v3.0 · 2026-04-19 · **PIPELINE F1-F7 COMPLETO · LIVE**
+
+---
+
+## ⚡ STATUS DO PIPELINE (2026-04-19)
+
+Produto concluiu o ciclo completo Research → Deploy sob ADR 012 + 013. Relatório final obrigatório: [`07-relatorio-criacao.md`](07-relatorio-criacao.md).
+
+| Recurso CF provisionado | Valor |
+|---|---|
+| Worker URL | `https://forte-worker.rfelipefernandes.workers.dev` |
+| Worker Version ID | `2015ae74-eb8a-432e-bbe6-019c9567db29` |
+| D1 | `forte-farpa-ai-db` (22 tabelas · schemas v1+v2+v3 aplicados remote) |
+| KV | `FORTE_CACHE` (`048067c702bf426d948203c9cc185c95`) |
+| R2 bucket | `forte-exports` |
+| Queues | `forte-export-queue` (producer+consumer) + `forte-export-dlq` |
+| Cron | `*/5 * * * *` (purge GDPR exports) |
+| AI binding | Workers AI (Tier 1) · fallback Gemini (Tier 2) · ADR 014 |
+
+### Épicos P0 implementados (F6 PRD)
+
+E1 auth cross-site · E2 onboarding PT · E3 dual-mode aluno · E4 anamnese versionada · E5 IA dual-tier com redact + gate `pt_reviewed` · E6 Pix manual (ADR 016) · E7 comunidade 3 níveis (backlog ativado parcial) · E8 LGPD export HMAC one-shot · E9 demo isolada · E10 bilíngue nativo · E11 modo simples · E12 CI matrix 6 browsers · E13 notificações (email apenas no MVP; SMS/WhatsApp revisão 2026-05-04).
+
+### ADRs vigentes neste produto
+- ADR 014 — IA dual-tier + Comunidade fora do MVP
+- ADR 015 — Onboarding dual-mode (PT vs aluno)
+- ADR 016 — Pix manual sem gateway
+
+---
+
+> 🏛️ **Constituição farpa.ai v4.0** · ADR 012 + 013 · Herda 8 invariantes universais (U1-U8) · Toda evolução via [Orquestrador](../farpa-reengenharia/07-personas/01-orquestrador.md) com pergunta-trava *"pontual vs completo?"*. Ver [`../farpa-reengenharia/CLAUDE.md`](../farpa-reengenharia/CLAUDE.md).
+> 🔄 **DS em transição (ADR 012)** — `tokens.css` / `themes.css` / `components.css` / `theme-engine.js` / `icons.js` são **próprios deste produto**, sem sync externo. Re-DS retroativo via pipeline completo quando o produto for tocado para mudança estrutural.
 
 ---
 
@@ -64,12 +95,12 @@ Ordem de carregamento obrigatória:
 ├── index.html              ← landing page (público)
 ├── login.html              ← login professor/aluno
 ├── forte.css               ← CSS específico (orange + dark) — NÃO sync
-├── tokens.css              ← design system base (sync com shared/)
-├── themes.css              ← temas (sync com shared/)
-├── components.css          ← componentes (sync com shared/)
-├── logo-system.css         ← logo unificado (sync com shared/)
-├── theme-engine.js         ← switcher de tema (sync com shared/)
-├── icons.js                ← biblioteca SVG line Lucide (sync com shared/)
+├── tokens.css              ← design system base (próprio · own (ADR 012))
+├── themes.css              ← temas (próprio · own (ADR 012))
+├── components.css          ← componentes (próprio · own (ADR 012))
+├── logo-system.css         ← logo unificado (próprio · own (ADR 012))
+├── theme-engine.js         ← switcher de tema (próprio · own (ADR 012))
+├── icons.js                ← biblioteca SVG line Lucide (próprio · own (ADR 012))
 ├── schema.sql              ← schema D1 completo
 ├── professor/
 ├── aluno/
@@ -78,7 +109,7 @@ Ordem de carregamento obrigatória:
 └── CLAUDE.md
 ```
 
-> ⚠️ `tokens.css` / `themes.css` / `logo-system.css` / `theme-engine.js` / `icons.js` → copiar de `../shared/` e não editar.
+> ⚠️ `tokens.css` / `themes.css` / `logo-system.css` / `theme-engine.js` / `icons.js` são **próprios deste produto** (ADR 012 revogou sync compartilhado). Editar livremente até re-DS retroativo via pipeline completo.
 
 ---
 
@@ -105,7 +136,7 @@ Auth:          OAuth2/OIDC via admin.farpa.ai (IdP centralizado)
 - **Cores nunca hardcoded** — sempre `var(--forte-xxx)` ou `var(--token)`. Usar `--forte-primary` (navy) ou `--forte-secondary` (orange) conforme papel.
 - **Tipografia imutável pós-pivô** — Lexend (ui + display) + JetBrains Mono (numerais/datas). NÃO voltar para Plus Jakarta Sans.
 - **Radius editorial** — 4px base (`--radius-md`), 6px lg, 8px xl, 12px 2xl. Override em `forte.css :root`.
-- **Nunca modificar** arquivos sincronizados de `shared/` neste repo; editar na raiz e re-sincronizar.
+- **DS autônomo (ADR 012)** — `tokens.css` / `themes.css` / `components.css` / `theme-engine.js` / `icons.js` são deste produto; sem fonte externa de sync. Mudanças estruturais no DS passam por pipeline completo (re-DS retroativo).
 - **Auth cross-site** — cookie de sessão `forte_sid` emitido como `HttpOnly; Secure; SameSite=None; Partitioned; Path=/`. `SameSite=Lax` quebra login (incidente 2026-04-18). Helper `sessionCookie()` + `clearSessionCookie()` em `workers/forte-worker/src/index.ts`.
 - **Logo unificado** — `<div class="farpa-logo">` com `--logo-mark-bg: var(--forte-accent)` (que aponta para navy primary no light, orange no dark). Nunca SVG próprio.
 - **Ícones SVG line (Lucide)** via `<span data-icon="nome"></span>` + `icons.js`. Nunca emojis em UI funcional (microcopy/toast OK).
@@ -117,22 +148,31 @@ Auth:          OAuth2/OIDC via admin.farpa.ai (IdP centralizado)
 ## COMANDOS DE PROVISIONAMENTO
 
 ```bash
-# Banco D1
-npx wrangler d1 create forte-farpa-ai-db
-# → copiar database_id para workers/forte-worker/wrangler.jsonc
+# Recursos já provisionados em 2026-04-19 (Onda C F7).
+# Comandos abaixo são idempotentes — úteis para recriar em novo ambiente.
+
+# Banco D1 + migrations (schemas v1/v2/v3 já aplicados em remote)
+npx wrangler d1 create forte-farpa-ai-db         # já existe: 224c3411-1ddf-4805-a82d-316568ddbb71
+npx wrangler d1 execute forte-farpa-ai-db --remote --file ./schema.sql
+npx wrangler d1 execute forte-farpa-ai-db --remote --file ./schema_v2.sql
+npx wrangler d1 execute forte-farpa-ai-db --remote --file ./schema_v3.sql
 
 # KV
-npx wrangler kv namespace create FORTE_CACHE
-# → copiar id para workers/forte-worker/wrangler.jsonc
+npx wrangler kv namespace create FORTE_CACHE     # já existe: 048067c702bf426d948203c9cc185c95
 
-# Schema
-npx wrangler d1 execute forte-farpa-ai-db --file ./schema.sql --remote
+# R2 + Queues (Onda C)
+npx wrangler r2 bucket create forte-exports
+npx wrangler queues create forte-export-queue
+npx wrangler queues create forte-export-dlq
 
-# Secrets
+# Secrets obrigatórios (via `wrangler secret put` · U6)
 cd workers/forte-worker
 npx wrangler secret put CLIENT_SECRET
-npx wrangler secret put SESSION_COOKIE_SECRET   # openssl rand -base64 48
-npx wrangler secret put ALLOWED_ORIGIN          # https://forte.farpa.ai
+npx wrangler secret put SESSION_COOKIE_SECRET    # openssl rand -base64 48
+npx wrangler secret put GEMINI_API_KEY           # Tier 2 IA (ADR 014)
+npx wrangler secret put EXPORT_HMAC_SECRET       # E8 one-shot download GDPR
+npx wrangler secret put ANAMNESIS_CRYPTO_KEY     # E4 anamnese versionada
+npx wrangler secret put ALLOWED_ORIGIN           # https://forte.farpa.ai
 
 # Deploy
 npx wrangler deploy

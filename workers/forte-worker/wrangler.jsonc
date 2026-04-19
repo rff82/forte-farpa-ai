@@ -20,15 +20,45 @@
     }
   ],
 
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "forte-exports"
+    }
+  ],
+
+  "queues": {
+    "producers": [
+      { "binding": "EXPORT_QUEUE", "queue": "forte-export-queue" }
+    ],
+    "consumers": [
+      {
+        "queue": "forte-export-queue",
+        "max_batch_size": 10,
+        "max_batch_timeout": 30,
+        "max_retries": 3,
+        "dead_letter_queue": "forte-export-dlq"
+      }
+    ]
+  },
+
+  "triggers": {
+    "crons": ["*/5 * * * *"]
+  },
+
   "ai": {
     "binding": "AI"
   },
 
   // Variáveis PÚBLICAS — não-sensíveis
-  // CLIENT_SECRET e SESSION_COOKIE_SECRET ficam em `wrangler secret put`
+  // CLIENT_SECRET, SESSION_COOKIE_SECRET, GEMINI_API_KEY, EXPORT_HMAC_SECRET
+  // ficam em `wrangler secret put`
   "vars": {
-    "ENVIRONMENT":  "production",
-    "PRODUCT_NAME": "forte",
-    "CLIENT_ID":    ""
+    "ENVIRONMENT":      "production",
+    "PRODUCT_NAME":     "forte",
+    "CLIENT_ID":        "",
+    "ALLOWED_ORIGIN":   "https://forte.farpa.ai",
+    "EMAIL_FROM":       "no-reply@forte.farpa.ai",
+    "AI_TIER2_ENABLED": "true"
   }
 }

@@ -1,19 +1,20 @@
-// forte-worker · src/index.ts · v2.0 · 2026-04-18
+// forte-worker · src/index.ts · v2.1 · 2026-04-19
 // farpa Forte — Personal Trainer Management API
-// Cloudflare Workers · D1 + KV + AI · OAuth via admin.farpa.ai
-// v2.0: IA professor/aluno, change-password, aluno criado pelo professor
+// Cloudflare Workers · D1 + KV + AI + R2 + Queues · OAuth via admin.farpa.ai
+// v2.1 (Onda B T1): E4 anamnese versionada · E5 IA dual-tier · E6 Pix manual ·
+//                   E7 comunidade 3-níveis · E8 LGPD export · E13 notificações · P6 LGPD delete
+// Env centralizada em ./env
 
-export interface Env {
-  DB:    D1Database;
-  CACHE: KVNamespace;
-  AI:    Ai;
-  ENVIRONMENT:           string;
-  PRODUCT_NAME:          string;
-  CLIENT_ID:             string;
-  ALLOWED_ORIGIN:        string;
-  CLIENT_SECRET:         string;
-  SESSION_COOKIE_SECRET: string;
-}
+import type { Env } from './env';
+import { handleAnamnesis }     from './routes/anamnesis';
+import { handleAI }            from './routes/ai';
+import { handlePayments }      from './routes/payments';
+import { handleCommunity }     from './routes/community';
+import { handleGDPR }          from './routes/gdpr';
+import { handleNotifications } from './routes/notifications';
+import { handleQueueBatch, handleScheduled } from './lib/queue-consumer';
+
+export type { Env };
 
 const ALLOWED_ORIGINS = [
   'https://forte.farpa.ai',
@@ -134,6 +135,13 @@ export default {
     }
 
     try {
+
+      // ── Onda B Turno 1: novos módulos (auth interno) ──────────────────────
+      // Cada handler retorna Response ou null (se não for responsável pela rota).
+      for (const handler of [handleAnamnesis, handleAI, handlePayments, handleCommunity, handleGDPR, handleNotifications]) {
+        const r = await handler(request, env, url, cors);
+        if (r) return r;
+      }
 
       // ── Health ───────────────────────────────────────────────────────────
       if (path === '/health') {
@@ -557,5 +565,15 @@ Sugira adaptações específicas para o treino de hoje. Para cada exercício que
       console.error(err);
       return jsonResp({ error:'Internal error', ts: Date.now() }, 500, cors);
     }
+  },
+
+  // Queue consumer (E8 exports + P6 deletions)
+  async queue(batch: MessageBatch<unknown>, env: Env): Promise<void> {
+    await handleQueueBatch(batch as MessageBatch<never>, env);
+  },
+
+  // Cron */5 * * * * — processa notification_schedules pendentes
+  async scheduled(_event: ScheduledEvent, env: Env, _ctx: ExecutionContext): Promise<void> {
+    await handleScheduled(env);
   },
 };

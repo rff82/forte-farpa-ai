@@ -182,6 +182,15 @@
             <label class="form-label" for="a-valor">Valor do plano (R$)</label>
             <input class="form-input" type="number" id="a-valor" min="0" step="0.01" placeholder="350.00">
           </div>
+          <div class="form-group">
+            <label class="form-label" for="a-mode">Modo de cadastro</label>
+            <select class="form-input" id="a-mode">
+              <option value="quick">Rápido — cadastra agora, anamnese depois</option>
+              <option value="clinical">Clínico — anamnese obrigatória antes de prescrição IA</option>
+              <option value="simple">Simples — fonte grande, comunidade oculta</option>
+            </select>
+            <small style="color:var(--forte-text-muted);">No modo <strong>clínico</strong>, a IA só prescreve treino após a anamnese estar preenchida.</small>
+          </div>
         </div>
 
         <div>
@@ -223,6 +232,7 @@
 
 <script src="../icons.js"></script>
 <script src="../theme-engine.js"></script>
+<script src="../i18n.js"></script>
 <script>
   const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
   let todosAlunos = [];
@@ -305,6 +315,7 @@
       plan_type:        document.getElementById('a-plano').value,
       sessions_per_week: parseInt(document.getElementById('a-sessoes').value),
       plan_value:       parseFloat(document.getElementById('a-valor').value || 0),
+      onboarding_mode:  document.getElementById('a-mode').value,
       anamnese: {
         has_heart_issue:  document.getElementById('a-heart').checked ? 1 : 0,
         has_hypertension: document.getElementById('a-hiper').checked ? 1 : 0,

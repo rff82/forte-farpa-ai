@@ -1908,3 +1908,81 @@ body.theme-alto-contraste .btn-glow::before { display: none; }
   .landing-actions   { flex-direction: column; align-items: stretch; }
   .landing-actions .btn { text-align: center; justify-content: center; }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   E11 Modo Simples ("Seu Antônio") — fonte 20px+, 1 CTA por tela, comunidade oculta
+   Ativado por JS via body.modo-simples (detectado via onboarding_mode: 'simple')
+   ────────────────────────────────────────────────────────────────────────── */
+body.modo-simples {
+  font-size: 20px;
+  line-height: 1.6;
+}
+body.modo-simples .btn         { padding: var(--space-4) var(--space-6); font-size: 18px; }
+body.modo-simples .btn-sm      { padding: var(--space-3) var(--space-4); font-size: 16px; }
+body.modo-simples .stat-value  { font-size: 36px; }
+body.modo-simples .page-title  { font-size: 28px; }
+body.modo-simples .nav-community,
+body.modo-simples [data-community],
+body.modo-simples .community-tab { display: none !important; }
+body.modo-simples .card        { padding: var(--space-5); }
+body.modo-simples .form-input  { font-size: 18px; padding: var(--space-3) var(--space-4); }
+
+/* Select de idioma em topbars */
+#lang-select {
+  background: var(--forte-surface);
+  border: 1px solid var(--forte-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  color: var(--forte-text-primary);
+  cursor: pointer;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   M5 · Disclaimer bilíngue IA (gate CLO F2.5)
+   U1 bilíngue · U3 WCAG AA · zero hardcode de cor
+   ─────────────────────────────────────────────────────────────── */
+.app-disclaimer {
+  margin-top: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--forte-border);
+  background: var(--forte-surface);
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--forte-text-muted);
+  text-align: center;
+}
+
+.app-disclaimer strong {
+  color: var(--forte-text-secondary);
+  font-weight: 600;
+}
+
+.ia-disclaimer {
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  border-left: 3px solid var(--forte-accent);
+  background: var(--forte-accent-light);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  color: var(--forte-text-secondary);
+}
+
+.ia-disclaimer::before {
+  content: "⚠ ";
+  color: var(--forte-accent);
+  font-weight: 700;
+}
+
+.landing-ai-note {
+  margin-top: var(--space-3);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--forte-text-muted);
+  font-style: italic;
+}
+

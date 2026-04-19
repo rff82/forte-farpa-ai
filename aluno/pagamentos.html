@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagamentos — farpa Forte (Aluno)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../themes.css">
+  <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../logo-system.css">
+  <link rel="stylesheet" href="../forte.css">
+</head>
+<body style="--logo-mark-bg: var(--forte-accent);">
+  <header class="topbar" style="border-bottom:1px solid var(--forte-border);">
+    <div class="topbar-left">
+      <a href="dashboard.html" class="farpa-logo">
+        <div class="farpa-logo-mark farpa-logo-mark--md">F</div>
+        <div class="farpa-logo-text"><span class="farpa-logo-wordmark">farpa</span><span class="farpa-logo-sublabel">Aluno</span></div>
+      </a>
+    </div>
+    <div class="topbar-right">
+      <select id="lang-select" aria-label="Idioma"><option value="pt-BR">PT-BR</option><option value="en">EN</option></select>
+      <button id="btn-alto-contraste" aria-label="Alto contraste"><span data-icon="contrast"></span> Contraste</button>
+    </div>
+  </header>
+
+  <main class="page-content" style="max-width:900px;margin:0 auto;padding:var(--space-6) var(--space-5);">
+    <h1 style="font-size:var(--text-3xl);margin-bottom:var(--space-5);">Pagamentos</h1>
+
+    <section class="card">
+      <div class="card-header"><span class="card-title">Pagamento em aberto</span></div>
+      <div class="card-body" id="pix-area">
+        <div class="empty-state"><div class="empty-title">Tudo em dia!</div></div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:var(--space-5);">
+      <div class="card-header"><span class="card-title">Histórico</span></div>
+      <div class="card-body" id="hist-list"></div>
+    </section>
+  </main>
+
+  <script src="../icons.js"></script>
+  <script src="../theme-engine.js"></script>
+  <script src="../i18n.js"></script>
+  <script>
+    const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
+    async function load(){
+      try {
+        const r = await fetch(`${WORKER}/api/student/payments`, { credentials:'include' });
+        if (r.status === 401) { location.href = '../login.html'; return; }
+        const data = await r.json();
+        const open = (data.open || data.pending || []);
+        if (open.length) {
+          const p = open[0];
+          document.getElementById('pix-area').innerHTML = `
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:var(--space-5);align-items:center;">
+              <div id="qr-code" style="width:200px;height:200px;background:var(--forte-surface);border:1px solid var(--forte-border);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--text-xs);">QR Pix</div>
+              <div>
+                <div style="font-size:var(--text-2xl);font-weight:700;font-family:var(--font-mono);">R$ ${Number(p.amount).toFixed(2)}</div>
+                <div style="color:var(--forte-text-muted);margin-bottom:var(--space-3);">Vence ${new Date(p.due_date*1000).toLocaleDateString('pt-BR')}</div>
+                <div class="form-group">
+                  <label class="form-label">Código Pix copia-e-cola</label>
+                  <textarea class="form-input" rows="3" readonly id="pix-code">${p.pix_payload || ''}</textarea>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('pix-code').value)">Copiar código</button>
+              </div>
+            </div>`;
+        }
+        document.getElementById('hist-list').innerHTML = (data.history || []).map(h => `
+          <div style="display:flex;justify-content:space-between;padding:var(--space-3) 0;border-bottom:1px solid var(--forte-border);">
+            <span>${h.reference_month || new Date(h.paid_at*1000).toLocaleDateString('pt-BR')}</span>
+            <span style="font-family:var(--font-mono);font-weight:600;">R$ ${Number(h.amount).toFixed(2)}</span>
+            <span class="badge badge-success">${h.status}</span>
+          </div>`).join('') || '<div class="empty-state"><div class="empty-desc">Sem histórico.</div></div>';
+      } catch {}
+    }
+    load();
+  </script>
+  <footer class="app-disclaimer" role="contentinfo">
+    <span data-i18n="disclaimer.ia">As sugestões de treino geradas por IA são rascunhos orientativos revisados e aprovados pelo seu Personal Trainer credenciado (CREF). Não substituem avaliação presencial, anamnese completa nem prescrição profissional. Em caso de dúvida, consulte seu profissional de saúde.</span>
+  </footer>
+</body>
+</html>

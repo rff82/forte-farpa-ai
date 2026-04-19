@@ -80,6 +80,7 @@
         <span class="page-subtitle" id="today-date"></span>
       </div>
       <div class="topbar-right">
+        <select id="lang-select" aria-label="Idioma / Language"><option value="pt-BR">PT-BR</option><option value="en">EN</option></select>
         <button id="btn-alto-contraste" aria-label="Ativar alto contraste"><span data-icon="contrast"></span> Contraste</button>
         <a href="agenda.html" class="btn btn-primary btn-sm">+ Nova sessão</a>
       </div>
@@ -131,7 +132,7 @@
         </div>
         <div class="card-body">
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--space-3);margin-bottom:var(--space-4);">
-            <button class="btn btn-secondary" onclick="openIAPlanModal()"><span data-icon="dumbbell"></span> Gerar plano de treino</button>
+            <button class="btn btn-secondary" onclick="openIAPlanModal()" title="Rascunho gerado por IA — você revisa e aprova antes de enviar ao aluno"><span data-icon="dumbbell"></span> Gerar plano de treino <span class="badge badge-orange" style="margin-left:var(--space-2);">IA assistida</span></button>
             <button class="btn btn-secondary" onclick="openIAAnalyzeModal()"><span data-icon="trending-up"></span> Analisar evolução</button>
             <button class="btn btn-secondary" onclick="openIAMessageModal()"><span data-icon="message-circle"></span> Rascunho de cobrança</button>
           </div>
@@ -141,6 +142,9 @@
               <button onclick="copyIAOutput()" class="btn btn-ghost btn-sm"><span data-icon="copy"></span> Copiar</button>
             </div>
             <div id="ia-output-text" style="font-size:var(--text-sm);color:var(--forte-text-secondary);line-height:1.7;white-space:pre-wrap;max-height:300px;overflow-y:auto;"></div>
+            <div class="ia-disclaimer" role="note" aria-live="polite">
+              <span data-i18n="disclaimer.ia">As sugestões de treino geradas por IA são rascunhos orientativos revisados e aprovados pelo seu Personal Trainer credenciado (CREF). Não substituem avaliação presencial, anamnese completa nem prescrição profissional. Em caso de dúvida, consulte seu profissional de saúde.</span>
+            </div>
           </div>
         </div>
       </div>
@@ -308,6 +312,7 @@
 
 <script src="../icons.js"></script>
 <script src="../theme-engine.js"></script>
+<script src="../i18n.js"></script>
 <script>
   const WORKER = 'https://forte-worker.rfelipefernandes.workers.dev';
 
